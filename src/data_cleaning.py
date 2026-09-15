@@ -21,7 +21,7 @@ DEDUPLICATED_FILE = PROCESSED_DIR / '03_deduplicated.csv'
 # Kolom-kolom rc-price*/bg-u-* di bawah ini AWALNYA masuk daftar hapus
 # (karena starts-with 'rc-price'/'bg-u-'), tapi ternyata dibutuhkan
 # untuk UI website (hard filter & info promo) -- jadi dikecualikan
-# dari penghapusan dan malah diproses lebih lanjut.
+# dari penghapusan dan akan diproses lebih lanjut.
 KOLOM_DIPERTAHANKAN = {
     'bg-u-ml-xxxs',
     'rc-price__additional-discount',

@@ -40,7 +40,9 @@ df['id_kost'] = [
 kolom_final = [
     'id_kost', 'gender_type', 'nama_kost', 'lokasi',
     'kamar_mandi_dalam', 'wifi', 'ac', 'kloset_duduk', 'kasur', 'akses_24_jam',
-    'harga', 'periode_sewa', 'is_promo_bulan_pertama',
+    'harga', 'periode_sewa', 'is_promo_bulan_pertama', 'perlu_daftar_tunggu',
+    'diskon_bulan_pertama', 'harga_sebelum_diskon', 'bebas_deposit', 'promo_label_lainnya',
+    'promo_sewa_lama','ada_promo_sewa_lama', 'hemat_sewa_lama'
 ]
 df = df[kolom_final]
 
