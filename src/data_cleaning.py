@@ -30,6 +30,7 @@ KOLOM_DIPERTAHANKAN = {
     'rc-price__long-term-rate',
 }
 
+# Mapping untuk nama-nama kolom yang akan digunakan pada dataset
 RENAME_MAP = {
     'tipe': 'gender_type',
     'track-list-booking-kost': 'kamar_mandi_dalam',
@@ -47,6 +48,7 @@ RENAME_MAP = {
     'rc-price__long-term-rate': 'promo_sewa_lama_raw',
 }
 
+# Urutan kolom
 KOLOM_BARU = [
     'gender_type', 'nama_kost', 'lokasi',
     'kamar_mandi_dalam', 'wifi', 'ac', 'kloset_duduk', 'kasur', 'akses_24_jam',
@@ -55,6 +57,8 @@ KOLOM_BARU = [
     'harga_sebelum_diskon_raw', 'promo_label_raw', 'promo_sewa_lama_raw',
 ]
 
+# Digunakan untuk mencari apakah pada kost tersebut memiliki fasilitas yang dipertlukan
+# Jika ada akan diubah ke boolean True/False nantinya
 KEYWORD_MAP = {
     'kamar_mandi_dalam': ['k. mandi dalam', 'kamar mandi dalam'],
     'wifi': ['wifi'],
@@ -97,7 +101,6 @@ def bersihkan_data(raw_file, label=''):
     df = pd.read_csv(raw_file)
 
     # 1. Hapus kolom yang tidak dipakai
-    #    (KOLOM_DIPERTAHANKAN dikecualikan meskipun prefix-nya cocok)
     kolom_dihapus = [
         col for col in df.columns
         if col.startswith(('rc-facilities_divider', 'bg-c-', 'rc-price', 'bg-u-', 'rc-overview'))
