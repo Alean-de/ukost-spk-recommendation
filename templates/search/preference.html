@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cari Kost - Langkah 1: Kebutuhan Dasar{% endblock %}
+{% block nav_cari %}active{% endblock %}
+
+{% block content %}
+<div class="wizard-page-wrapper">
+    <div class="container container-narrow">
+        
+        <!-- Wizard Progress Bar -->
+        <div class="wizard-header">
+            <div class="wizard-steps">
+                <div class="wizard-step active">
+                    <div class="step-badge">1</div>
+                    <span class="step-label">Kebutuhan Dasar</span>
+                </div>
+                <div class="wizard-step-line"></div>
+                <div class="wizard-step">
+                    <div class="step-badge">2</div>
+                    <span class="step-label">Fasilitas</span>
+                </div>
+                <div class="wizard-step-line"></div>
+                <div class="wizard-step">
+                    <div class="step-badge">3</div>
+                    <span class="step-label">Prioritas</span>
+                </div>
+            </div>
+            <div class="wizard-title-block text-center">
+                <h1 class="wizard-main-title">Langkah 1: Tentukan Kebutuhan Dasar</h1>
+                <p class="wizard-subtitle">Masukkan preferensi lokasi kampus, tipe kamar, serta batas anggaran bulanan Anda.</p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="wizard-card">
+            <form id="step1Form" action="{% url 'fasilitas' %}" method="GET">
+                
+                <!-- Campus Selection -->
+                <div class="form-group mb-4">
+                    <label for="campusSelect" class="form-label font-weight-bold">
+                        <i class="fas fa-university text-primary mr-1"></i> Kampus UKRIDA Tujuan <span class="text-danger">*</span>
+                    </label>
+                    <select id="campusSelect" name="campus" class="form-control form-select form-control-lg" required>
+                        {% for campus in campus_data %}
+                        <option value="{{ campus.id }}" {% if forloop.first %}selected{% endif %}>{{ campus.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <small class="form-text text-muted">Jarak kost akan dihitung otomatis dari kampus yang Anda pilih.</small>
+                </div>
+
+                <!-- Room Type (Gender) -->
+                <div class="form-group mb-4">
+                    <label class="form-label font-weight-bold">
+                        <i class="fas fa-user-friends text-primary mr-1"></i> Tipe Kost / Gender <span class="text-danger">*</span>
+                    </label>
+                    <div class="radio-card-grid">
+                        <label class="radio-card">
+                            <input type="radio" name="room_type" value="Semua" checked>
+                            <div class="radio-card-content">
+                                <i class="fas fa-users radio-icon"></i>
+                                <span class="radio-title">Semua</span>
+                                <span class="radio-desc">Tampilkan seluruh tipe</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="room_type" value="Putra">
+                            <div class="radio-card-content">
+                                <i class="fas fa-male radio-icon"></i>
+                                <span class="radio-title">Kost Putra</span>
+                                <span class="radio-desc">Khusus penghuni pria</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="room_type" value="Putri">
+                            <div class="radio-card-content">
+                                <i class="fas fa-female radio-icon"></i>
+                                <span class="radio-title">Kost Putri</span>
+                                <span class="radio-desc">Khusus penghuni wanita</span>
+                            </div>
+                        </label>
+                        <label class="radio-card">
+                            <input type="radio" name="room_type" value="Campur">
+                            <div class="radio-card-content">
+                                <i class="fas fa-venus-mars radio-icon"></i>
+                                <span class="radio-title">Kost Campur</span>
+                                <span class="radio-desc">Putra & Putri</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Maximum Budget Slider -->
+                <div class="form-group mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                        <label for="priceSlider" class="form-label font-weight-bold mb-0">
+                            <i class="fas fa-money-bill-wave text-primary mr-1"></i> Batas Anggaran Bulanan Maksimal
+                        </label>
+                        <span class="range-display-badge" id="priceSlider_display">Rp2.000.000</span>
+                    </div>
+                    <input type="range" id="priceSlider" name="max_price" class="custom-range" min="800000" max="3500000" step="100000" value="2000000" data-format="currency">
+                    <div class="slider-scale-labels d-flex justify-content-between text-muted text-small mt-1">
+                        <span>Rp800.000<span class="slider-label-desc"> (Ekonomis)</span></span>
+                        <span>Rp2.000.000<span class="slider-label-desc"> (Standar)</span></span>
+                        <span>Rp3.500.000<span class="slider-label-desc"> (Eksklusif)</span></span>
+                    </div>
+                </div>
+
+                <!-- Maximum Distance Slider -->
+                <div class="form-group mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                        <label for="distanceSlider" class="form-label font-weight-bold mb-0">
+                            <i class="fas fa-route text-primary mr-1"></i> Jarak Maksimal ke Kampus
+                        </label>
+                        <span class="range-display-badge" id="distanceSlider_display">3.0 km</span>
+                    </div>
+                    <input type="range" id="distanceSlider" name="max_distance" class="custom-range" min="0.5" max="8.0" step="0.5" value="3.0" data-format="distance">
+                    <div class="slider-scale-labels d-flex justify-content-between text-muted text-small mt-1">
+                        <span>0.5 km<span class="slider-label-desc"> (Jalan Kaki)</span></span>
+                        <span>3.0 km<span class="slider-label-desc"> (Sepeda Motor)</span></span>
+                        <span>8.0 km<span class="slider-label-desc"> (Radius Luas)</span></span>
+                    </div>
+                </div>
+
+                <!-- Wizard Actions -->
+                <div class="wizard-actions mt-5">
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg btn-wizard-back">
+                        <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg btn-wizard-next">
+                        Lanjut ke Pilih Fasilitas <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Load saved preferences if available
+    const saved = Storage.getSearchPrefs();
+    if (saved.campus) {
+        document.getElementById('campusSelect').value = saved.campus;
+    }
+    if (saved.room_type) {
+        const radio = document.querySelector(`input[name="room_type"][value="${saved.room_type}"]`);
+        if (radio) radio.checked = true;
+    }
+    if (saved.max_price) {
+        const slider = document.getElementById('priceSlider');
+        slider.value = saved.max_price;
+        slider.dispatchEvent(new Event('input'));
+    }
+    if (saved.max_distance) {
+        const slider = document.getElementById('distanceSlider');
+        slider.value = saved.max_distance;
+        slider.dispatchEvent(new Event('input'));
+    }
+
+    // Save on submit
+    document.getElementById('step1Form').addEventListener('submit', (e) => {
+        const form = e.target;
+        const selectedRadio = form.querySelector('input[name="room_type"]:checked');
+        
+        Storage.saveSearchPrefs({
+            campus: form.campus.value,
+            room_type: selectedRadio ? selectedRadio.value : 'Semua',
+            max_price: parseInt(form.max_price.value),
+            max_distance: parseFloat(form.max_distance.value)
+        });
+    });
+});
+</script>
+{% endblock %}

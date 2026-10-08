@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ kost.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-page-wrapper pb-5">
+    
+    <!-- Top Breadcrumb & Next/Prev Bar -->
+    <div class="detail-top-nav bg-white border-bottom py-3">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <nav class="breadcrumb-nav text-small">
+                <a href="{% url 'home' %}" class="text-muted"><i class="fas fa-home"></i> Beranda</a>
+                <span class="mx-2 text-muted">/</span>
+                <a href="{% url 'rekomendasi' %}" class="text-muted">Hasil Rekomendasi</a>
+                <span class="mx-2 text-muted">/</span>
+                <span class="font-weight-600 text-dark">{{ kost.name }}</span>
+            </nav>
+
+            <div class="detail-prev-next-links">
+                {% if prev_kost %}
+                <a href="{% url 'detail_kost' prev_kost.id %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-chevron-left mr-1"></i> Kost Sebelumnya
+                </a>
+                {% endif %}
+                {% if next_kost %}
+                <a href="{% url 'detail_kost' next_kost.id %}" class="btn btn-sm btn-outline-secondary">
+                    Kost Berikutnya <i class="fas fa-chevron-right ml-1"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="detail-layout-grid">
+            
+            <!-- Main Left Content -->
+            <div class="detail-main-col">
+                
+                <!-- Gallery Showcase -->
+                <div class="detail-gallery-card mb-4">
+                    <div class="main-gallery-view" id="mainGalleryView">
+                        <div class="gallery-placeholder text-center p-4" id="galleryMainDisplay">
+                            <i class="fas fa-bed fa-4x text-muted mb-2" id="galleryMainIcon"></i>
+                            <span class="text-muted font-weight-500 d-block" id="galleryMainCaption">Foto {{ kost.name }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Basic Info Card -->
+                <div class="card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                        <div>
+                            <h1 class="detail-title">{{ kost.name }}</h1>
+                        </div>
+                        <div class="detail-rating-box text-right">
+                            <div class="d-flex align-items-center justify-content-end text-accent font-weight-bold" style="font-size: 1.25rem;">
+                                <i class="fas fa-star mr-1"></i> {{ kost.rating }}
+                            </div>
+                            <small class="text-muted">Berdasarkan ulasan mahasiswa</small>
+                        </div>
+                    </div>
+
+                    <p class="detail-address text-muted mb-3">
+                        <i class="fas fa-map-marker-alt text-primary mr-1"></i> {{ kost.address }}
+                    </p>
+
+                    <!-- Proximity Info -->
+                    <div class="proximity-banner p-3 rounded mb-3 bg-light d-flex align-items-center flex-wrap gap-4">
+                        <div>
+                            <small class="text-muted d-block">Jarak ke Kampus UKRIDA:</small>
+                            <strong class="text-primary"><i class="fas fa-route mr-1"></i> {{ kost.distance }} km</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Estimasi Jalan Kaki:</small>
+                            <strong><i class="fas fa-walking mr-1"></i> &plusmn; {{ kost.distance|floatformat:0|default:"1"|add:"12" }} Menit</strong>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Estimasi Motor / Ojek:</small>
+                            <strong><i class="fas fa-motorcycle mr-1"></i> &plusmn; 4-6 Menit</strong>
+                        </div>
+                    </div>
+
+                    <h3 class="h5 font-weight-600 mb-2">Deskripsi Kost</h3>
+                    <p class="text-muted">{{ kost.description }}</p>
+                </div>
+
+                <!-- Section: Analisis Data Rekomendasi (Wireframe Required) -->
+                <div class="card p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h3 class="h5 font-weight-600 mb-1">
+                                <i class="fas fa-chart-bar text-primary mr-2"></i> Analisis Data Rekomendasi
+                            </h3>
+                            <p class="text-muted text-small mb-0">Kenapa Kost Ini Cocok Untuk Kebutuhanmu?</p>
+                        </div>
+                        <span class="badge badge-success px-3 py-2 font-weight-bold">
+                            <i class="fas fa-check-double mr-1"></i> Status: 6 dari 6 Variabel Terpenuhi
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm mb-0">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Kriteria Pengujian</th>
+                                    <th>Preferensi Mahasiswa</th>
+                                    <th>Spesifikasi Kost Ini</th>
+                                    <th>Status Kesesuaian</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Harga Sewa</strong></td>
+                                    <td>&le; Rp1.500.000 / bulan</td>
+                                    <td><strong>{{ kost.price_display }}</strong> / bulan</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-check"></i> Sesuai Budget</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Jarak ke Kampus</strong></td>
+                                    <td>&le; 3.0 km</td>
+                                    <td><strong>{{ kost.distance }} km</strong></td>
+                                    <td><span class="badge badge-success"><i class="fas fa-check"></i> Radius Dekat</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Koneksi Internet</strong></td>
+                                    <td>Wajib Ada</td>
+                                    <td>{{ kost.wifi_speed|default:"Wi-Fi Cepat" }}</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-check"></i> Terpenuhi</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Kamar Mandi</strong></td>
+                                    <td>Kamar Mandi Dalam</td>
+                                    <td>{% if kost.bathroom %}Kamar Mandi Dalam{% else %}Luar Bersama{% endif %}</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-check"></i> Sesuai</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Keamanan</strong></td>
+                                    <td>CCTV &amp; Penjaga</td>
+                                    <td>{% if kost.security %}Security 24 Jam &amp; CCTV{% else %}Aman Lingkungan{% endif %}</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-check"></i> Terjamin</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tipe Hunian</strong></td>
+                                    <td>Sesuai Gender</td>
+                                    <td>Kost {{ kost.room_type }}</td>
+                                    <td><span class="badge badge-success"><i class="fas fa-check"></i> Cocok</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Facilities Detailed Section -->
+                <div class="card p-4 mb-4">
+                    <h3 class="h5 font-weight-600 mb-3"><i class="fas fa-th-large text-primary mr-2"></i> Fasilitas Lengkap</h3>
+                    
+                    <div class="facilities-detail-grid">
+                        {% for f in kost.facilities %}
+                        <div class="facility-detail-item">
+                            <i class="fas fa-check-circle text-success mr-2"></i>
+                            <span>{{ f }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Kost Rules & Specifications -->
+                <div class="card p-4 mb-4">
+                    <h3 class="h5 font-weight-600 mb-3"><i class="fas fa-clipboard-list text-primary mr-2"></i> Spesifikasi & Aturan Kost</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h4 class="h6 font-weight-bold text-muted mb-2">Spesifikasi Kamar:</h4>
+                            <ul class="spec-list">
+                                <li><strong>Ukuran Kamar:</strong> {{ kost.room_size }}</li>
+                                <li><strong>Kamar Mandi:</strong> {% if kost.bathroom %}Dalam Kamar{% else %}Luar / Bersama{% endif %}</li>
+                                <li><strong>Pendingin Ruangan:</strong> {% if kost.ac %}AC Split{% else %}Kipas Angin{% endif %}</li>
+                                <li><strong>Kecepatan Internet:</strong> {{ kost.wifi_speed|default:"Wi-Fi Cepat" }}</li>
+                                <li><strong>Biaya Listrik:</strong> {% if kost.electricity_included %}Termasuk dalam sewa bulanan{% else %}Token mandiri per kamar{% endif %}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h4 class="h6 font-weight-bold text-muted mb-2">Peraturan & Ketertiban:</h4>
+                            <ul class="rules-list">
+                                {% for r in kost.rules %}
+                                <li><i class="fas fa-info-circle text-primary mr-1"></i> {{ r }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar Right Column (Sticky) -->
+            <div class="detail-sidebar-col">
+                
+                <!-- Pricing & Booking Card -->
+                <div class="card detail-action-card sticky-sidebar p-4 mb-4">
+                    <div class="price-header mb-3">
+                        <span class="text-muted text-small d-block">Harga Sewa Bulanan</span>
+                        <div class="detail-price-main">
+                            <span class="price-num">{{ kost.price_display }}</span>
+                            <span class="price-unit">/ bulan</span>
+                        </div>
+                        <div class="deposit-note text-small text-muted mt-1">
+                            Deposit Awal: <strong>{{ kost.deposit_display }}</strong> (dapat dikembalikan)
+                        </div>
+                    </div>
+
+                    <!-- SPK Match Highlight -->
+                    <div class="spk-score-card mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="font-weight-600">Skor Kecocokan SPK:</span>
+                            <span class="score-badge-large">{{ kost.score }}% Skor Cocok</span>
+                        </div>
+                        <div class="progress-bar-container mb-3">
+                            <div class="progress-bar-fill" style="width: {{ kost.score }}%;"></div>
+                        </div>
+
+                        <!-- Score breakdown table with all 5 criteria + total -->
+                        <div class="score-breakdown-table text-small">
+                            <div class="d-flex justify-content-between py-1 border-bottom">
+                                <span>Kesesuaian Harga</span>
+                                <strong>{{ kost.scores.harga }}%</strong>
+                            </div>
+                            <div class="d-flex justify-content-between py-1 border-bottom">
+                                <span>Kelengkapan Fasilitas</span>
+                                <strong>{{ kost.scores.fasilitas }}%</strong>
+                            </div>
+                            <div class="d-flex justify-content-between py-1 border-bottom">
+                                <span>Kedekatan Jarak</span>
+                                <strong>{{ kost.scores.jarak }}%</strong>
+                            </div>
+                            <div class="d-flex justify-content-between py-1 border-bottom">
+                                <span>Tingkat Keamanan</span>
+                                <strong>{{ kost.scores.keamanan }}%</strong>
+                            </div>
+                            <div class="d-flex justify-content-between py-1 border-bottom">
+                                <span>Rating &amp; Kebersihan</span>
+                                <strong>{{ kost.scores.rating }}%</strong>
+                            </div>
+                            <div class="d-flex justify-content-between pt-2 font-weight-bold text-primary">
+                                <span>Total Skor Rekomendasi</span>
+                                <span>{{ kost.score }}.0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Primary Actions Stack -->
+                    <div class="action-buttons-stack">
+                        <a href="https://wa.me/6281234567890?text=Halo%20{{ kost.owner_name|urlencode }},%20saya%20mahasiswa%20UKRIDA%20tertarik%20dengan%20kost%20{{ kost.name|urlencode }}" target="_blank" class="btn btn-success btn-block btn-lg mb-2">
+                            <i class="fab fa-whatsapp mr-2"></i> Hubungi Pemilik Kost
+                        </a>
+                        
+                        <div class="btn-group-row d-flex gap-2 mb-2">
+                            <button class="btn btn-outline-primary btn-block btn-favorite" data-action="toggle-favorite" data-id="{{ kost.id }}">
+                                <i class="far fa-heart mr-1"></i> Simpan
+                            </button>
+                            <button class="btn btn-outline-secondary btn-block btn-compare" data-action="toggle-compare" data-id="{{ kost.id }}">
+                                <i class="fas fa-columns mr-1"></i> Bandingkan
+                            </button>
+                        </div>
+
+                        <button class="btn btn-outline-info btn-block" id="btnShareKost">
+                            <i class="fas fa-share-alt mr-1"></i> Bagikan Kost
+                        </button>
+                    </div>
+
+                    <!-- Owner Profile -->
+                    <div class="owner-contact-box mt-4 pt-3 border-top">
+                        <div class="d-flex align-items-center">
+                            <div class="owner-avatar mr-3">
+                                <i class="fas fa-user-tie fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Pengelola / Pemilik Kost:</small>
+                                <strong>{{ kost.owner_name }}</strong>
+                                <div class="text-small text-muted">{{ kost.owner_phone }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Similar Kost Section -->
+        <div class="similar-kost-section mt-5">
+            <h2 class="h4 font-weight-bold mb-4">Kost Serupa di Sekitar Area</h2>
+            <div class="kost-grid">
+                {% for sk in similar_kost %}
+                <div class="kost-card">
+                    <div class="kost-card-img-wrapper">
+                        <div class="kost-card-img-placeholder">
+                            <i class="fas fa-home fa-3x text-muted"></i>
+                        </div>
+                        <span class="badge-type">{{ sk.room_type }}</span>
+                        <button class="btn-favorite" data-action="toggle-favorite" data-id="{{ sk.id }}">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                    <div class="kost-card-body">
+                        <div class="kost-card-score-row">
+                            <span class="match-score"><span class="score-num">{{ sk.score }}%</span> Cocok</span>
+                            <span class="kost-rating"><i class="fas fa-star text-accent"></i> {{ sk.rating }}</span>
+                        </div>
+                        <h3 class="kost-card-title"><a href="{% url 'detail_kost' sk.id %}">{{ sk.name }}</a></h3>
+                        <p class="kost-card-location"><i class="fas fa-map-marker-alt text-primary"></i> {{ sk.distance }} km dari UKRIDA</p>
+                        <div class="kost-card-footer">
+                            <div class="kost-price">
+                                <span class="price-amount">{{ sk.price_display }}</span>
+                            </div>
+                            <a href="{% url 'detail_kost' sk.id %}" class="btn btn-primary btn-sm">Detail</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Share Button
+    const shareBtn = document.getElementById('btnShareKost');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ kost.name }} - U Kost',
+                    text: 'Lihat rekomendasi kost {{ kost.name }} di sekitar kampus UKRIDA dengan skor SPK {{ kost.score }}%',
+                    url: window.location.href,
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    Toast.show('Tautan kost berhasil disalin ke clipboard!', 'success');
+                }).catch(() => {
+                    Toast.show('Bagikan URL: ' + window.location.href, 'info');
+                });
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

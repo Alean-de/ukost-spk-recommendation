@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="U Kost - Sistem Rekomendasi Kost Cerdas & Transparan untuk Mahasiswa UKRIDA">
+    <title>{% block title %}U Kost{% endblock %} | Rekomendasi Kost Mahasiswa</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components.css' %}">
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    {% block navbar %}
+    <!-- Main Navigation -->
+    <nav class="navbar" id="mainNavbar">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-brand" aria-label="U Kost Home">
+                <div class="nav-logo d-flex align-items-center gap-2">
+                    <img src="{% static 'images/logo-icon.svg' %}" alt="U Kost Icon" class="brand-logo-icon-only">
+                    <span class="logo-text">U Kost</span>
+                </div>
+            </a>
+            
+            <!-- Desktop Nav -->
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{% url 'home' %}" class="nav-link {% block nav_home %}{% endblock %}"><i class="fas fa-home"></i> Beranda</a></li>
+                <li><a href="{% url 'cari_kost' %}" class="nav-link {% block nav_cari %}{% endblock %}"><i class="fas fa-search"></i> Cari Kost</a></li>
+                <li><a href="{% url 'rekomendasi' %}" class="nav-link {% block nav_rekomendasi %}{% endblock %}"><i class="fas fa-star"></i> Rekomendasi</a></li>
+                <li><a href="{% url 'bandingkan' %}" class="nav-link {% block nav_bandingkan %}{% endblock %}">
+                    <i class="fas fa-columns"></i> Bandingkan
+                    <span class="nav-badge" id="compareBadge" style="display:none;">0</span>
+                </a></li>
+                <li><a href="{% url 'favorit' %}" class="nav-link {% block nav_favorit %}{% endblock %}">
+                    <i class="fas fa-heart"></i> Favorit
+                    <span class="nav-badge" id="favoriteBadge" style="display:none;">0</span>
+                </a></li>
+                <li><a href="{% url 'favorit' %}?tab=riwayat" class="nav-link {% block nav_riwayat %}{% endblock %}"><i class="fas fa-history"></i> Riwayat</a></li>
+            </ul>
+            
+            <!-- Right Nav Actions (User & Mobile Toggle) -->
+            <div class="nav-actions d-flex align-items-center gap-2">
+                <!-- User Menu -->
+                <div class="nav-user" id="navUser">
+                    <div class="user-avatar" id="userMenuTrigger" tabindex="0" role="button" aria-label="User menu">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <strong id="userName">{{ user.name|default:"Mahasiswa" }}</strong>
+                            <small id="userNim">{{ user.nim|default:"" }}</small>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'favorit' %}" class="dropdown-item"><i class="fas fa-heart"></i> Favorit Saya</a>
+                        <a href="{% url 'favorit' %}?tab=riwayat" class="dropdown-item"><i class="fas fa-history"></i> Riwayat</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt"></i> Keluar</a>
+                    </div>
+                </div>
+                
+                <!-- Mobile Toggle -->
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+                    <span class="hamburger"></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+
+    <!-- Toast Container for notifications -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% block footer %}
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="nav-logo d-flex align-items-center gap-2 mb-2">
+                        <img src="{% static 'images/logo-icon.svg' %}" alt="U Kost Icon" class="brand-logo-icon-only">
+                        <span class="logo-text">U Kost</span>
+                    </div>
+                    <p>Rekomendasi Cerdas & Transparan untuk Kebutuhan Mahasiswa</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Navigasi</h4>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Beranda</a></li>
+                        <li><a href="{% url 'cari_kost' %}">Cari Kost</a></li>
+                        <li><a href="{% url 'rekomendasi' %}">Rekomendasi</a></li>
+                        <li><a href="{% url 'bandingkan' %}">Bandingkan</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Lainnya</h4>
+                    <ul>
+                        <li><a href="{% url 'favorit' %}">Favorit</a></li>
+                        <li><a href="{% url 'favorit' %}?tab=riwayat">Riwayat Pencarian</a></li>
+                    </ul>
+                </div>
+                <div class="footer-info">
+                    <h4>Kontak</h4>
+                    <p><i class="fas fa-university"></i> Universitas Kristen Krida Wacana</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Tanjung Duren, Jakarta Barat</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 U Kost — Sistem Pendukung Keputusan Rekomendasi Kost Mahasiswa UKRIDA</p>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- Main JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

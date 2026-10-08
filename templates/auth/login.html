@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Masuk{% endblock %}
+{% block body_class %}auth-page-body{% endblock %}
+
+{% block navbar %}
+<!-- Minimal Navbar for Auth -->
+<nav class="navbar auth-navbar">
+    <div class="nav-container">
+        <a href="{% url 'home' %}" class="nav-brand">
+            <div class="nav-logo d-flex align-items-center gap-2">
+                <img src="{% static 'images/logo-icon.svg' %}" alt="U Kost Logo" class="brand-logo-icon-only">
+                <span class="logo-text">U Kost</span>
+            </div>
+        </a>
+        <div class="auth-nav-link">
+            <span>Belum punya akun?</span>
+            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-sm">Daftar Akun</a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <!-- Left Branding Banner -->
+        <div class="auth-banner">
+            <div class="auth-banner-content">
+                <span class="badge badge-accent mb-3"><i class="fas fa-graduation-cap"></i> Khusus Mahasiswa UKRIDA</span>
+                <h2>Temukan Kost Ideal Sesuai Kebutuhanmu</h2>
+                <p>Sistem Pendukung Keputusan (SPK) cerdas yang menganalisis harga, jarak, dan fasilitas untuk merekomendasikan kost terbaik di sekitar kampus.</p>
+                
+                <div class="auth-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle text-accent"></i>
+                        <span>Rekomendasi terpersonalisasi berbasis bobot kriteria</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle text-accent"></i>
+                        <span>Transparan dengan rincian skor kecocokan</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle text-accent"></i>
+                        <span>Fitur komparasi berdampingan hingga 3 kost</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Form Card -->
+        <div class="auth-form-card">
+            <div class="auth-header">
+                <h1 class="auth-title">Selamat Datang Kembali</h1>
+                <p class="auth-subtitle">Masuk dengan NIM dan kata sandi akun mahasiswa Anda</p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-danger mb-4">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>{{ error }}</div>
+            </div>
+            {% endif %}
+
+            <form action="{% url 'login' %}" method="POST" class="auth-form" id="loginForm">
+                {% csrf_token %}
+                
+                <button type="button" class="btn btn-outline-primary btn-block mb-3 py-2" id="btnGoogleSSO">
+                    <i class="fab fa-google text-danger mr-2"></i> Masuk Cepat via Google Mail Kampus UKRIDA
+                </button>
+
+                <div class="auth-divider">
+                    <span>atau masuk dengan NIM & Kata Sandi</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="nim" class="form-label">Nomor Induk Mahasiswa (NIM) <span class="text-danger">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-id-card input-icon"></i>
+                        <input type="text" id="nim" name="nim" class="form-control" placeholder="Contoh: 412022001" required autofocus value="412022001">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="campus_select" class="form-label">Kampus UKRIDA</label>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-university input-icon"></i>
+                        <select id="campus_select" name="campus_id" class="form-control form-select">
+                            {% for campus in campus_data %}
+                            <option value="{{ campus.id }}">{{ campus.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label mb-0">Kata Sandi <span class="text-danger">*</span></label>
+                        <a href="javascript:void(0)" onclick="Toast.show('Silakan hubungi helpdesk IT UKRIDA untuk pemulihan kata sandi', 'info')" class="text-small text-primary">Lupa Sandi?</a>
+                    </div>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" class="form-control" placeholder="Masukkan kata sandi" required value="password123">
+                        <button type="button" class="btn-toggle-password" id="togglePassword" aria-label="Lihat password">
+                            <i class="far fa-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input type="checkbox" id="rememberMe" name="remember" class="form-check-input" checked>
+                    <label for="rememberMe" class="form-check-label text-small">Ingat sesi login saya</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg mb-3">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Masuk ke Portal U Kost
+                </button>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                    <button type="button" class="btn btn-sm btn-link text-muted p-0" id="btnHelpModal">
+                        <i class="fas fa-question-circle mr-1"></i> Butuh Bantuan?
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="btnQuickDemo">
+                        <i class="fas fa-user-graduate mr-1"></i> Akun Demo
+                    </button>
+                </div>
+
+                <p class="auth-footer text-center mt-4">
+                    Belum memiliki akun? <a href="{% url 'register' %}" class="text-primary font-weight-bold">Daftar Sekarang</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bantuan Login -->
+<div class="modal-overlay" id="helpModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fas fa-info-circle text-primary mr-2"></i> Panduan Masuk Mahasiswa UKRIDA</h3>
+            <button class="modal-close" id="btnCloseHelpModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h4 class="h6 font-weight-bold mb-2">1. Masuk Menggunakan Akun Google UKRIDA:</h4>
+            <p class="text-muted text-small mb-3">
+                Gunakan alamat email resmi UKRIDA Anda (akhiran <code>@student.ukrida.ac.id</code>) untuk masuk instan dengan mengklik tombol "Masuk Cepat via Google Mail Kampus UKRIDA".
+            </p>
+
+            <h4 class="h6 font-weight-bold mb-2">2. Masuk Menggunakan NIM:</h4>
+            <p class="text-muted text-small mb-3">
+                Masukkan NIM 9-digit Anda beserta kata sandi portal akademik. Jika Anda mahasiswa baru, silakan gunakan kata sandi default yang diberikan saat registrasi kampus.
+            </p>
+
+            <h4 class="h6 font-weight-bold mb-2">3. Pusat Bantuan IT:</h4>
+            <p class="text-muted text-small mb-0">
+                Hubungi Biro Sistem Informasi UKRIDA melalui email <code>support@ukrida.ac.id</code> jika mengalami kendala login atau lupa kredensial.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" id="btnOkHelpModal">Saya Mengerti</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Toggle Password Visibility
+    const toggleBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eyeIcon');
+
+    if (toggleBtn && passwordInput && eyeIcon) {
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            eyeIcon.className = isPassword ? 'far fa-eye-slash' : 'far fa-eye';
+        });
+    }
+
+    // Google SSO Mock
+    const googleBtn = document.getElementById('btnGoogleSSO');
+    if (googleBtn) {
+        googleBtn.addEventListener('click', () => {
+            document.getElementById('nim').value = '412022001';
+            document.getElementById('password').value = 'google_sso_verified';
+            Toast.show('Terautentikasi melalui Google Workspace UKRIDA!', 'success');
+            setTimeout(() => {
+                document.getElementById('loginForm').submit();
+            }, 600);
+        });
+    }
+
+    // Quick demo login
+    const demoBtn = document.getElementById('btnQuickDemo');
+    if (demoBtn) {
+        demoBtn.addEventListener('click', () => {
+            document.getElementById('nim').value = '412022001';
+            document.getElementById('password').value = 'demo1234';
+            document.getElementById('loginForm').submit();
+        });
+    }
+
+    // Help Modal
+    const helpModal = document.getElementById('helpModal');
+    const btnHelp = document.getElementById('btnHelpModal');
+    const btnCloseHelp = document.getElementById('btnCloseHelpModal');
+    const btnOkHelp = document.getElementById('btnOkHelpModal');
+
+    if (helpModal && btnHelp) {
+        btnHelp.addEventListener('click', () => helpModal.classList.add('show'));
+        btnCloseHelp.addEventListener('click', () => helpModal.classList.remove('show'));
+        btnOkHelp.addEventListener('click', () => helpModal.classList.remove('show'));
+        helpModal.addEventListener('click', (e) => {
+            if (e.target === helpModal) helpModal.classList.remove('show');
+        });
+    }
+});
+</script>
+{% endblock %}

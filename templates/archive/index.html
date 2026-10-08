@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Favorit & Riwayat Pencarian{% endblock %}
+{% block nav_favorit %}active{% endblock %}
+
+{% block content %}
+<div class="archive-page-wrapper py-5">
+    <div class="container">
+        
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <span class="badge badge-accent mb-2"><i class="fas fa-bookmark"></i> Halaman Pengguna</span>
+                <h1 class="h2 font-weight-bold">Kost Favorit & Riwayat Pencarian</h1>
+                <p class="text-muted">Akses daftar kost impian yang Anda simpan dan telusuri riwayat kalkulasi SPK sebelumnya.</p>
+            </div>
+            <a href="{% url 'cari_kost' %}" class="btn btn-primary">
+                <i class="fas fa-search-plus mr-1"></i> Mulai Pencarian Baru
+            </a>
+        </div>
+
+        <!-- Custom Tabs -->
+        <div class="custom-tabs-header mb-4">
+            <button class="custom-tab-btn active" id="tabBtnFavorites" data-tab="favorites">
+                <i class="fas fa-heart text-danger mr-2"></i> Kost Favorit (<span id="favCount">0</span>)
+            </button>
+            <button class="custom-tab-btn" id="tabBtnHistory" data-tab="history">
+                <i class="fas fa-history text-primary mr-2"></i> Riwayat Pencarian SPK (<span id="histCount">0</span>)
+            </button>
+        </div>
+
+        <!-- Tab 1: Favorites Content -->
+        <div class="tab-content-panel active" id="tabPanelFavorites">
+            <div class="kost-grid" id="favoritesGrid">
+                <!-- Injected by JS -->
+            </div>
+
+            <div class="empty-state-box text-center p-5 card" id="emptyFavorites" style="display: none;">
+                <i class="far fa-heart fa-4x text-muted mb-3"></i>
+                <h3 class="h4 font-weight-bold">Belum Ada Kost Favorit</h3>
+                <p class="text-muted max-w-md mx-auto mb-4">
+                    Simpan kost yang Anda minati dengan mengklik tombol ikon hati pada kartu kost untuk menemukannya kembali dengan cepat di sini.
+                </p>
+                <a href="{% url 'rekomendasi' %}" class="btn btn-primary">
+                    <i class="fas fa-search mr-1"></i> Telusuri Rekomendasi Kost
+                </a>
+            </div>
+        </div>
+
+        <!-- Tab 2: Search History Content -->
+        <div class="tab-content-panel" id="tabPanelHistory" style="display: none;">
+            <div class="card p-3 mb-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div class="d-flex flex-wrap gap-2 align-items-center flex-grow-1">
+                        <div class="input-group" style="max-width: 280px;">
+                            <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" class="form-control form-control-sm" id="historySearchInput" placeholder="Cari riwayat kampus/prioritas...">
+                        </div>
+                        <select class="form-select form-select-sm" id="historyCampusFilter" style="max-width: 220px;">
+                            <option value="ALL">Semua Kampus</option>
+                            <option value="Kampus 1">Kampus 1 Tanjung Duren</option>
+                            <option value="Kampus 2">Kampus 2 Kedoya</option>
+                        </select>
+                        <select class="form-select form-select-sm" id="historySort" style="max-width: 170px;">
+                            <option value="newest">Terbaru</option>
+                            <option value="oldest">Terlama</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger" id="btnClearHistory">
+                        <i class="fas fa-trash-alt mr-1"></i> Hapus Semua Riwayat
+                    </button>
+                </div>
+            </div>
+
+            <div class="card shadow-sm overflow-hidden mb-4" id="historyCardWrapper">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="historyTable">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Waktu Pencarian</th>
+                                <th>Kampus Tujuan</th>
+                                <th>Batas Anggaran</th>
+                                <th>Radius Jarak</th>
+                                <th>Kriteria Prioritas</th>
+                                <th>Hasil</th>
+                                <th class="text-end">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTbody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="empty-state-box text-center p-5 card" id="emptyHistory" style="display: none;">
+                <i class="fas fa-history fa-4x text-muted mb-3"></i>
+                <h3 class="h4 font-weight-bold">Belum Ada Riwayat Pencarian</h3>
+                <p class="text-muted max-w-md mx-auto mb-4">
+                    Setiap kali Anda menjalankan kalkulasi SPK di U Kost, ringkasan preferensi pencarian akan otomatis tersimpan di sini.
+                </p>
+                <a href="{% url 'cari_kost' %}" class="btn btn-primary">
+                    <i class="fas fa-sliders-h mr-1"></i> Mulai Pencarian Pertama
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ALL_KOST = {{ all_kost_json|safe }};
+const SERVER_HISTORY = {{ history_json|safe }};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Tab Switching
+    const tabBtnFav = document.getElementById('tabBtnFavorites');
+    const tabBtnHist = document.getElementById('tabBtnHistory');
+    const panelFav = document.getElementById('tabPanelFavorites');
+    const panelHist = document.getElementById('tabPanelHistory');
+
+    const switchTab = (target) => {
+        if (target === 'history') {
+            tabBtnFav.classList.remove('active');
+            tabBtnHist.classList.add('active');
+            panelFav.style.display = 'none';
+            panelHist.style.display = 'block';
+        } else {
+            tabBtnHist.classList.remove('active');
+            tabBtnFav.classList.add('active');
+            panelHist.style.display = 'none';
+            panelFav.style.display = 'block';
+        }
+    };
+
+    tabBtnFav.addEventListener('click', () => switchTab('favorites'));
+    tabBtnHist.addEventListener('click', () => switchTab('history'));
+
+    // Check URL query param for initial tab (e.g., ?tab=riwayat)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tab') === 'riwayat') {
+        switchTab('history');
+    }
+
+    // Render Favorites
+    const favGrid = document.getElementById('favoritesGrid');
+    const emptyFav = document.getElementById('emptyFavorites');
+    const favCount = document.getElementById('favCount');
+
+    const renderFavorites = () => {
+        const favIds = Storage.getFavorites();
+        const favKost = favIds.map(id => ALL_KOST.find(k => k.id === parseInt(id))).filter(Boolean);
+
+        favCount.textContent = favKost.length;
+
+        if (favKost.length === 0) {
+            favGrid.innerHTML = '';
+            emptyFav.style.display = 'block';
+            return;
+        }
+
+        emptyFav.style.display = 'none';
+        favGrid.innerHTML = favKost.map(k => {
+            const facBadges = (k.facilities || []).slice(0, 3).map(f => `<span class="badge badge-light border text-muted mr-1 mb-1">${f}</span>`).join('');
+            const waMsg = encodeURIComponent(`Halo pengelola ${k.name}, saya mahasiswa UKRIDA yang melihat kost Anda melalui U Kost. Apakah masih ada kamar tersedia?`);
+            return `
+            <div class="kost-card">
+                <div class="kost-card-img-wrapper">
+                    <div class="kost-card-img-placeholder">
+                        <i class="fas fa-home fa-3x text-muted"></i>
+                    </div>
+                    <span class="badge-type">${k.room_type}</span>
+                    <button class="btn-favorite active" data-action="toggle-favorite" data-id="${k.id}" title="Hapus dari Favorit">
+                        <i class="fas fa-heart text-danger"></i>
+                    </button>
+                </div>
+                <div class="kost-card-body">
+                    <div class="kost-card-score-row">
+                        <span class="match-score"><span class="score-num">${k.score}%</span> Cocok</span>
+                        <span class="kost-rating"><i class="fas fa-star text-accent"></i> ${k.rating}</span>
+                    </div>
+                    <h3 class="kost-card-title"><a href="/kost/${k.id}/">${k.name}</a></h3>
+                    <p class="kost-card-location"><i class="fas fa-map-marker-alt text-primary"></i> ${k.distance} km dari UKRIDA &bull; ${k.address}</p>
+                    <div class="facilities-preview mb-3">
+                        ${facBadges}
+                    </div>
+                    <div class="kost-card-footer flex-column align-items-stretch gap-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="kost-price">
+                                <span class="price-amount">${k.price_display}</span>
+                                <span class="price-period">/ bulan</span>
+                            </div>
+                            <div class="kost-card-actions">
+                                <button class="btn-icon btn-outline-secondary btn-compare" data-action="toggle-compare" data-id="${k.id}" title="Bandingkan">
+                                    <i class="fas fa-columns"></i>
+                                </button>
+                                <a href="/kost/${k.id}/" class="btn btn-primary btn-sm">Lihat Detail</a>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 pt-2 border-top">
+                            <a href="https://wa.me/6281234567890?text=${waMsg}" target="_blank" class="btn btn-sm btn-outline-success flex-grow-1 text-center">
+                                <i class="fab fa-whatsapp mr-1"></i> Hubungi Pemilik
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger" data-action="toggle-favorite" data-id="${k.id}" title="Hapus dari Favorit">
+                                <i class="fas fa-trash-alt"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    };
+
+    // Render History
+    const histTbody = document.getElementById('historyTbody');
+    const emptyHist = document.getElementById('emptyHistory');
+    const histCount = document.getElementById('histCount');
+    const clearHistBtn = document.getElementById('btnClearHistory');
+    const historyCardWrapper = document.getElementById('historyCardWrapper');
+    const searchInput = document.getElementById('historySearchInput');
+    const campusFilter = document.getElementById('historyCampusFilter');
+    const sortSelect = document.getElementById('historySort');
+
+    const getCombinedHistory = () => {
+        let local = null;
+        try {
+            const raw = localStorage.getItem(Storage.HISTORY_KEY);
+            if (raw !== null) {
+                local = JSON.parse(raw);
+            }
+        } catch (e) { local = null; }
+        return local !== null ? local : SERVER_HISTORY;
+    };
+
+    const renderHistory = () => {
+        let historyList = getCombinedHistory() || [];
+        histCount.textContent = historyList.length;
+
+        if (historyList.length === 0) {
+            histTbody.innerHTML = '';
+            if (historyCardWrapper) historyCardWrapper.style.display = 'none';
+            emptyHist.style.display = 'block';
+            return;
+        }
+
+        // Apply search filter
+        const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+        const campusVal = campusFilter ? campusFilter.value : 'ALL';
+
+        let filtered = historyList.filter(item => {
+            const matchQuery = !query || 
+                (item.campus && item.campus.toLowerCase().includes(query)) ||
+                (item.priority && item.priority.toLowerCase().includes(query)) ||
+                (item.budget && item.budget.toLowerCase().includes(query));
+            
+            const matchCampus = campusVal === 'ALL' || (item.campus && item.campus.includes(campusVal));
+
+            return matchQuery && matchCampus;
+        });
+
+        // Apply sort
+        const sortVal = sortSelect ? sortSelect.value : 'newest';
+        if (sortVal === 'oldest') {
+            filtered = [...filtered].reverse();
+        }
+
+        if (filtered.length === 0) {
+            histTbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-muted"><i class="fas fa-search mr-2"></i>Tidak ada riwayat yang cocok dengan filter pencarian.</td></tr>`;
+            if (historyCardWrapper) historyCardWrapper.style.display = 'block';
+            emptyHist.style.display = 'none';
+            return;
+        }
+
+        if (historyCardWrapper) historyCardWrapper.style.display = 'block';
+        emptyHist.style.display = 'none';
+
+        histTbody.innerHTML = filtered.map(h => `
+            <tr>
+                <td>
+                    <div class="font-weight-600">${h.date || 'Hari Ini'}</div>
+                    <small class="text-muted"><i class="far fa-clock"></i> ${h.time || '10:00 WIB'}</small>
+                </td>
+                <td><span class="badge badge-light border"><i class="fas fa-university text-primary mr-1"></i> ${h.campus}</span></td>
+                <td><strong>${h.budget}</strong></td>
+                <td>${h.distance}</td>
+                <td><span class="text-small text-muted">${h.priority}</span></td>
+                <td><span class="badge badge-accent"><i class="fas fa-check mr-1"></i>${h.results_count || '5'} Rekomendasi</span></td>
+                <td class="text-end">
+                    <a href="{% url 'rekomendasi' %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-redo-alt mr-1"></i> Lihat Hasil
+                    </a>
+                </td>
+            </tr>
+        `).join('');
+    };
+
+    if (searchInput) searchInput.addEventListener('input', renderHistory);
+    if (campusFilter) campusFilter.addEventListener('change', renderHistory);
+    if (sortSelect) sortSelect.addEventListener('change', renderHistory);
+
+    clearHistBtn.addEventListener('click', () => {
+        if (confirm('Apakah Anda yakin ingin menghapus semua catatan riwayat pencarian?')) {
+            localStorage.setItem(Storage.HISTORY_KEY, JSON.stringify([]));
+            SERVER_HISTORY.length = 0;
+            renderHistory();
+            Toast.show('Riwayat pencarian berhasil dibersihkan', 'info');
+        }
+    });
+
+    // Re-render favorites when a favorite is toggled
+    document.addEventListener('click', (e) => {
+        const favBtn = e.target.closest('.btn-favorite, [data-action="toggle-favorite"]');
+        if (favBtn) {
+            setTimeout(renderFavorites, 60);
+        }
+    });
+
+    renderFavorites();
+    renderHistory();
+});
+</script>
+{% endblock %}
+

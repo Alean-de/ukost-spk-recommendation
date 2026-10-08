@@ -1,0 +1,685 @@
+/* ============================================
+   U KOST — Responsive Styles
+   Full cross-device mobile & tablet responsive system
+   ============================================ */
+
+/* ========== Global Reset & Overflow Protection ========== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ========== Tablet Breakpoints: max-width 1199px ========== */
+@media (max-width: 1199px) {
+    .hero-title {
+        font-size: 2.3rem;
+    }
+
+    .steps-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-xl);
+    }
+
+    .steps-grid::before {
+        display: none;
+    }
+
+    .preview-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .preview-grid .kost-card:last-child {
+        grid-column: span 2;
+        max-width: 50%;
+        margin: 0 auto;
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .reco-card-inner {
+        grid-template-columns: 250px 1fr;
+    }
+
+    .detail-layout-grid {
+        grid-template-columns: 1fr 340px;
+        gap: var(--space-lg);
+    }
+}
+
+/* ========== Medium Breakpoints: max-width 991px ========== */
+@media (max-width: 991px) {
+    .detail-layout-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+    }
+
+    .sticky-sidebar {
+        position: static !important;
+    }
+
+    .auth-container {
+        flex-direction: column;
+    }
+
+    .auth-branding {
+        padding: var(--space-xl) var(--space-lg);
+        text-align: center;
+        align-items: center;
+    }
+
+    .auth-form-card {
+        padding: var(--space-xl);
+    }
+
+    .radio-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .facilities-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .results-kost-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========== Mobile Breakpoints: max-width 767px ========== */
+@media (max-width: 767px) {
+    :root {
+        --navbar-height: 64px;
+    }
+
+    /* Container Spacing */
+    .container,
+    .container-wide,
+    .container-narrow {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+        width: 100%;
+    }
+
+    /* Navigation */
+    .nav-menu {
+        position: fixed;
+        top: var(--navbar-height);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        flex-direction: column;
+        padding: var(--space-lg);
+        gap: var(--space-xs);
+        transform: translateX(100%);
+        transition: transform var(--transition-normal);
+        z-index: 999;
+        overflow-y: auto;
+        box-shadow: var(--shadow-xl);
+    }
+
+    .nav-menu.show,
+    .nav-menu.active {
+        transform: translateX(0);
+    }
+
+    .nav-link {
+        padding: 14px 16px;
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        width: 100%;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .nav-user {
+        display: block;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        padding: 45px 0 35px;
+    }
+
+    .hero-title {
+        font-size: 1.75rem;
+        line-height: 1.25;
+    }
+
+    .hero-desc {
+        font-size: 0.95rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+    }
+
+    .hero-stats {
+        gap: var(--space-md);
+        flex-wrap: wrap;
+    }
+
+    .hero-stat {
+        flex: 1 1 40%;
+    }
+
+    /* Wizard Progress & Layout */
+    .wizard-page-wrapper {
+        padding: var(--space-lg) 0 var(--space-2xl);
+    }
+
+    .wizard-header {
+        margin-bottom: var(--space-lg);
+    }
+
+    .wizard-steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--space-md);
+        padding: 0 4px;
+        gap: 2px;
+    }
+
+    .wizard-step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-width: 60px;
+    }
+
+    .step-badge {
+        width: 34px;
+        height: 34px;
+        font-size: 0.85rem;
+    }
+
+    .step-label {
+        font-size: 0.72rem;
+        margin-top: 4px;
+        white-space: nowrap;
+    }
+
+    .wizard-step-line {
+        flex: 1;
+        max-width: 40px;
+        min-width: 15px;
+        height: 2px;
+        margin: 0 4px 16px;
+    }
+
+    .wizard-title-block .wizard-main-title {
+        font-size: 1.4rem;
+        line-height: 1.3;
+    }
+
+    .wizard-title-block .wizard-subtitle {
+        font-size: 0.88rem;
+    }
+
+    .wizard-card {
+        padding: 1.25rem 1rem !important;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    /* Radio Cards in Step 1 */
+    .radio-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .radio-card-content {
+        padding: 12px 8px;
+        min-height: 85px;
+    }
+
+    .radio-card-content .radio-icon {
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+    }
+
+    .radio-card-content .radio-title {
+        font-size: 0.85rem;
+    }
+
+    .radio-card-content .radio-desc {
+        font-size: 0.7rem;
+    }
+
+    /* Wizard Sliders & Scale Labels */
+    .slider-scale-labels {
+        font-size: 0.75rem;
+        gap: 4px;
+    }
+
+    .slider-scale-labels .slider-label-desc {
+        display: none;
+    }
+
+    .range-display-badge {
+        font-size: 0.9rem;
+        padding: 4px 10px;
+    }
+
+    /* Wizard Actions (Buttons Bottom) */
+    .wizard-actions {
+        display: flex !important;
+        flex-direction: column-reverse !important;
+        gap: 10px !important;
+        margin-top: 1.75rem !important;
+        padding-top: 1.25rem !important;
+        width: 100% !important;
+    }
+
+    .wizard-actions .btn,
+    .wizard-actions a.btn,
+    .btn-wizard-back,
+    .btn-wizard-next {
+        width: 100% !important;
+        justify-content: center !important;
+        text-align: center !important;
+        margin: 0 !important;
+        padding: 12px 16px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .wizard-action-group {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 10px !important;
+    }
+
+    .wizard-action-group .btn {
+        width: 100% !important;
+    }
+
+    /* Facilities Selection (Step 2) */
+    .facilities-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .facility-card-inner {
+        padding: 12px 8px;
+    }
+
+    .facility-card-inner .facility-icon {
+        font-size: 1.4rem;
+    }
+
+    .facility-name {
+        font-size: 0.82rem;
+    }
+
+    .quick-chip-actions {
+        display: flex;
+        gap: 6px;
+    }
+
+    .quick-chip-actions .btn {
+        padding: 4px 8px;
+        font-size: 0.75rem;
+    }
+
+    /* Criteria Priority (Step 3) */
+    .criteria-card-item {
+        padding: 1rem 0.85rem;
+    }
+
+    .criteria-header {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: var(--space-sm);
+    }
+
+    .criteria-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .criteria-info {
+        flex: 1 1 calc(100% - 150px);
+    }
+
+    .criteria-info .criteria-name {
+        font-size: 0.95rem;
+    }
+
+    .criteria-info .criteria-desc {
+        font-size: 0.78rem;
+    }
+
+    .criteria-weight-badge {
+        margin-left: auto;
+    }
+
+    .criteria-weight-badge .weight-label {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+
+    .criteria-levels {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        margin-top: 10px;
+    }
+
+    .criteria-levels .level-btn {
+        padding: 8px 4px;
+        font-size: 0.75rem;
+    }
+
+    .weight-preview-box {
+        padding: 1rem;
+    }
+
+    .stacked-bar-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    /* Recommendation Results Page */
+    .results-header-banner {
+        padding: 1.75rem 0;
+    }
+
+    .results-title {
+        font-size: 1.5rem;
+    }
+
+    .results-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .header-actions {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .header-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .pref-summary-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pref-tag {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+
+    .results-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+        width: 100%;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .btn-group-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        width: 100%;
+    }
+
+    .btn-group-filter .btn-filter {
+        flex: 1 1 calc(50% - 4px);
+        text-align: center;
+        padding: 6px 4px;
+        font-size: 0.8rem;
+    }
+
+    .results-kost-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+    }
+
+    .kost-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .kost-card-actions {
+        display: flex;
+        width: 100%;
+        gap: 8px;
+    }
+
+    .kost-card-actions .btn {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* Kost Detail Page */
+    .detail-top-nav {
+        padding: 10px 0;
+        background: white;
+    }
+
+    .detail-top-nav .container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .breadcrumb-nav {
+        font-size: 0.8rem;
+        line-height: 1.4;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 2px;
+    }
+
+    .detail-prev-next-links {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .detail-prev-next-links .btn {
+        flex: 1;
+        text-align: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        padding: 6px 10px;
+    }
+
+    .main-gallery-view {
+        height: 240px !important;
+        border-radius: var(--radius-lg);
+    }
+
+    .detail-title {
+        font-size: 1.4rem;
+    }
+
+    .proximity-banner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .facilities-detail-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    /* Comparison Page */
+    .comparison-top-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .comparison-top-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    #addKostBar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #addKostSelect {
+        max-width: 100% !important;
+        width: 100%;
+    }
+
+    #addKostBar .btn {
+        width: 100%;
+    }
+
+    /* Table Scroll Wrapping */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Footer */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+    }
+}
+
+/* ========== Extra Small Mobile: max-width 479px ========== */
+@media (max-width: 479px) {
+    .wizard-steps {
+        padding: 0;
+    }
+
+    .wizard-step {
+        min-width: 50px;
+    }
+
+    .step-badge {
+        width: 30px;
+        height: 30px;
+        font-size: 0.78rem;
+    }
+
+    .step-label {
+        font-size: 0.68rem;
+    }
+
+    .wizard-step-line {
+        max-width: 25px;
+        min-width: 10px;
+    }
+
+    .wizard-title-block .wizard-main-title {
+        font-size: 1.25rem;
+    }
+
+    .radio-card-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+
+    .radio-card-content {
+        padding: 10px 4px;
+        min-height: 80px;
+    }
+
+    .radio-card-content .radio-title {
+        font-size: 0.8rem;
+    }
+
+    .radio-card-content .radio-desc {
+        font-size: 0.65rem;
+    }
+
+    .facilities-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .facilities-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .proximity-banner {
+        grid-template-columns: 1fr;
+    }
+
+    .criteria-info {
+        flex: 1 1 100%;
+        order: 2;
+    }
+
+    .criteria-icon {
+        order: 0;
+    }
+
+    .criteria-weight-badge {
+        order: 1;
+        margin-left: auto;
+    }
+
+    .btn-group-filter .btn-filter {
+        flex: 1 1 100%;
+    }
+
+    .modal-card {
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+}

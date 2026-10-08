@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cari Kost - Langkah 2: Fasilitas{% endblock %}
+{% block nav_cari %}active{% endblock %}
+
+{% block content %}
+<div class="wizard-page-wrapper">
+    <div class="container container-narrow">
+        
+        <!-- Wizard Progress Bar -->
+        <div class="wizard-header">
+            <div class="wizard-steps">
+                <div class="wizard-step completed">
+                    <div class="step-badge"><i class="fas fa-check"></i></div>
+                    <span class="step-label">Kebutuhan Dasar</span>
+                </div>
+                <div class="wizard-step-line completed"></div>
+                <div class="wizard-step active">
+                    <div class="step-badge">2</div>
+                    <span class="step-label">Fasilitas</span>
+                </div>
+                <div class="wizard-step-line"></div>
+                <div class="wizard-step">
+                    <div class="step-badge">3</div>
+                    <span class="step-label">Prioritas</span>
+                </div>
+            </div>
+            <div class="wizard-title-block text-center">
+                <h1 class="wizard-main-title">Langkah 2: Pilih Fasilitas Yang Dibutuhkan</h1>
+                <p class="wizard-subtitle">Centang fasilitas yang wajib atau diharapkan ada di kost pilihanmu.</p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="wizard-card">
+            <form id="step2Form" action="{% url 'prioritas' %}" method="GET">
+                
+                <!-- Quick Selection Controls -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="text-muted font-weight-500">
+                        <span id="selectedCount">0</span> fasilitas dipilih
+                    </span>
+                    <div class="quick-chip-actions">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="btnSelectAll">Pilih Semua</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="btnClearAll">Hapus Pilihan</button>
+                    </div>
+                </div>
+
+                <!-- Facilities Grid -->
+                <div class="facilities-grid mb-5">
+                    {% for item in facilities %}
+                    <label class="facility-checkbox-card" for="fac_{{ item.id }}">
+                        <input type="checkbox" id="fac_{{ item.id }}" name="facilities" value="{{ item.id }}" class="facility-input">
+                        <div class="facility-card-inner">
+                            <div class="facility-icon">
+                                <i class="{{ item.icon }}"></i>
+                            </div>
+                            <span class="facility-name">{{ item.name }}</span>
+                            <div class="facility-check-indicator">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <!-- Custom Facilities Input Box -->
+                <div class="card p-3 mb-4 bg-light border">
+                    <label class="form-label font-weight-bold mb-2">
+                        <i class="fas fa-plus-circle text-primary mr-1"></i> Fasilitas Khusus Lainnya
+                    </label>
+                    <div class="input-group d-flex gap-2">
+                        <input type="text" id="customFacilityInput" class="form-control" placeholder="Tulis fasilitas khusus (contoh: Meja Belajar Besar, TV Kabel, Pemanas Air)...">
+                        <button type="button" class="btn btn-outline-primary" id="btnAddCustomFac">
+                            <i class="fas fa-plus mr-1"></i> Tambah
+                        </button>
+                    </div>
+                    <div class="custom-fac-tags mt-2 d-flex flex-wrap gap-2" id="customFacTags">
+                        <!-- Added tags appear here -->
+                    </div>
+                </div>
+
+                <!-- Summary Info Note -->
+                <div class="alert alert-info d-flex align-items-center mb-4">
+                    <i class="fas fa-info-circle fa-lg mr-3 text-primary"></i>
+                    <div>
+                        <strong>Tips SPK:</strong> Pemilihan fasilitas akan dijadikan acuan perhitungan skor kelengkapan fasilitas kost. Semakin lengkap fasilitas yang sesuai dengan pilihanmu, semakin tinggi nilai rekomendasi kost tersebut.
+                    </div>
+                </div>
+
+                <!-- Wizard Actions -->
+                <div class="wizard-actions mt-5">
+                    <a href="{% url 'cari_kost' %}" class="btn btn-outline-secondary btn-lg btn-wizard-back">
+                        <i class="fas fa-arrow-left mr-2"></i> Langkah 1
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg btn-wizard-next">
+                        Lanjut ke Atur Prioritas <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const inputs = document.querySelectorAll('.facility-input');
+    const selectedCountSpan = document.getElementById('selectedCount');
+    const selectAllBtn = document.getElementById('btnSelectAll');
+    const clearAllBtn = document.getElementById('btnClearAll');
+
+    const customInput = document.getElementById('customFacilityInput');
+    const btnAddCustom = document.getElementById('btnAddCustomFac');
+    const customTagsContainer = document.getElementById('customFacTags');
+    const customFacilities = [];
+
+    const addCustomTag = (name) => {
+        if (!name || customFacilities.includes(name)) return;
+        customFacilities.push(name);
+
+        const tag = document.createElement('span');
+        tag.className = 'badge badge-primary p-2 d-inline-flex align-items-center gap-2';
+        tag.innerHTML = `
+            <i class="fas fa-check-circle"></i> ${name}
+            <button type="button" class="btn-close-tag border-0 bg-transparent text-white ml-2" style="cursor: pointer; line-height: 1;">&times;</button>
+        `;
+        tag.querySelector('.btn-close-tag').addEventListener('click', () => {
+            const idx = customFacilities.indexOf(name);
+            if (idx > -1) customFacilities.splice(idx, 1);
+            tag.remove();
+            updateCount();
+        });
+        customTagsContainer.appendChild(tag);
+        updateCount();
+    };
+
+    if (btnAddCustom && customInput) {
+        btnAddCustom.addEventListener('click', () => {
+            const val = customInput.value.trim();
+            if (val) {
+                addCustomTag(val);
+                customInput.value = '';
+                Toast.show(`Fasilitas "${val}" ditambahkan`, 'success');
+            }
+        });
+
+        customInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                btnAddCustom.click();
+            }
+        });
+    }
+
+    const updateCount = () => {
+        const checked = document.querySelectorAll('.facility-input:checked').length;
+        const total = checked + customFacilities.length;
+        if (selectedCountSpan) selectedCountSpan.textContent = total;
+    };
+
+    // Load saved facilities
+    const saved = Storage.getSearchPrefs();
+    if (saved.facilities && Array.isArray(saved.facilities)) {
+        saved.facilities.forEach(facId => {
+            const input = document.getElementById('fac_' + facId);
+            if (input) {
+                input.checked = true;
+            } else if (typeof facId === 'string' && facId.startsWith('custom:')) {
+                addCustomTag(facId.replace('custom:', ''));
+            }
+        });
+    } else {
+        // Default popular
+        ['wifi', 'bathroom', 'ac', 'security'].forEach(id => {
+            const input = document.getElementById('fac_' + id);
+            if (input) input.checked = true;
+        });
+    }
+    updateCount();
+
+    inputs.forEach(input => {
+        input.addEventListener('change', updateCount);
+    });
+
+    selectAllBtn.addEventListener('click', () => {
+        inputs.forEach(input => input.checked = true);
+        updateCount();
+    });
+
+    clearAllBtn.addEventListener('click', () => {
+        inputs.forEach(input => input.checked = false);
+        customFacilities.length = 0;
+        customTagsContainer.innerHTML = '';
+        updateCount();
+    });
+
+    // Save on submit
+    document.getElementById('step2Form').addEventListener('submit', (e) => {
+        const selected = Array.from(document.querySelectorAll('.facility-input:checked')).map(i => i.value);
+        const allFacs = [...selected, ...customFacilities.map(c => 'custom:' + c)];
+        Storage.saveSearchPrefs({
+            facilities: allFacs
+        });
+    });
+});
+</script>
+{% endblock %}

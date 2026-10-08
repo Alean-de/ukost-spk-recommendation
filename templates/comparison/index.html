@@ -1,0 +1,315 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bandingkan Kost{% endblock %}
+{% block nav_bandingkan %}active{% endblock %}
+
+{% block content %}
+<div class="comparison-page-wrapper py-5">
+    <div class="container container-wide">
+        
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <span class="badge badge-primary mb-2"><i class="fas fa-columns"></i> Komparasi Berdampingan</span>
+                <h1 class="h2 font-weight-bold">Bandingkan Kost Pilihanmu</h1>
+                <p class="text-muted">Bandingkan spesifikasi, harga sewa, fasilitas, dan skor kecocokan SPK hingga 3 kost sekaligus.</p>
+            </div>
+            <div class="comparison-top-actions d-flex flex-wrap gap-2">
+                <a href="{% url 'rekomendasi' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left mr-1"></i> Kembali ke Hasil Rekomendasi
+                </a>
+                <button class="btn btn-outline-info btn-sm" id="btnPrintCompare">
+                    <i class="fas fa-print mr-1"></i> Cetak / Unduh PDF Ringkasan
+                </button>
+                <button class="btn btn-outline-danger btn-sm" id="btnClearCompare">
+                    <i class="fas fa-trash-alt mr-1"></i> Bersihkan Semua
+                </button>
+            </div>
+        </div>
+
+        <!-- Add Kost Selector Bar -->
+        <div class="card p-3 mb-4 bg-light shadow-sm border">
+            <div class="d-flex align-items-center flex-wrap gap-3" id="addKostBar">
+                <label for="addKostSelect" class="font-weight-600 mb-0">
+                    <i class="fas fa-plus-circle text-primary mr-1"></i> Tambahkan Kost ke Matriks:
+                </label>
+                <select id="addKostSelect" class="form-control form-select form-control-sm flex-grow-1" style="max-width: 450px;">
+                    <option value="">-- Pilih kost untuk dibandingkan --</option>
+                    {% for k in all_kost %}
+                    <option value="{{ k.id }}">{{ k.name }} ({{ k.room_type }} - {{ k.price_display }})</option>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-primary btn-sm" id="btnAddKostToCompare">
+                    <i class="fas fa-plus mr-1"></i> Tambahkan
+                </button>
+            </div>
+        </div>
+
+        <!-- Matrix Table Container -->
+        <div class="comparison-matrix-card card shadow-sm overflow-hidden mb-5" id="matrixCard">
+            <div class="table-responsive">
+                <table class="table comparison-table" id="comparisonTable">
+                    <thead>
+                        <tr class="header-row">
+                            <th class="matrix-label-col">
+                                <div class="p-3">
+                                    <span class="text-muted text-small d-block font-weight-bold">PARAMETER KOST</span>
+                                    <span class="font-weight-bold text-dark">Karakteristik & Fitur</span>
+                                </div>
+                            </th>
+                            <!-- Kost Columns Rendered Dynamically by JS -->
+                            <th class="kost-col kost-col-1"></th>
+                            <th class="kost-col kost-col-2"></th>
+                            <th class="kost-col kost-col-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparisonTbody">
+                        <!-- Dynamic Rows Injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty state fallback if none selected -->
+        <div class="empty-compare-state text-center p-5 card" id="emptyCompareBox" style="display: none;">
+            <i class="fas fa-columns fa-4x text-muted mb-3"></i>
+            <h3 class="h4 font-weight-bold">Belum Ada Kost yang Dipilih untuk Dibandingkan</h3>
+            <p class="text-muted max-w-md mx-auto mb-4">
+                Pilih kost dari dropdown di atas atau telusuri kartu kost pada halaman hasil rekomendasi untuk memulai perbandingan berdampingan.
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                <a href="{% url 'rekomendasi' %}" class="btn btn-primary">
+                    <i class="fas fa-search mr-2"></i> Jelajahi Hasil Rekomendasi
+                </a>
+                <button type="button" class="btn btn-outline-primary" id="btnRestoreDemo">
+                    <i class="fas fa-history mr-2"></i> Tampilkan Demo (2 Kost)
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const ALL_KOST = {{ all_kost_json|safe }};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const table = document.getElementById('comparisonTable');
+    const matrixCard = document.getElementById('matrixCard');
+    const tbody = document.getElementById('comparisonTbody');
+    const emptyBox = document.getElementById('emptyCompareBox');
+    const addSelect = document.getElementById('addKostSelect');
+    const addBtn = document.getElementById('btnAddKostToCompare');
+    const clearBtn = document.getElementById('btnClearCompare');
+    const restoreDemoBtn = document.getElementById('btnRestoreDemo');
+
+    const updateSelectOptions = (compareIds) => {
+        if (!addSelect) return;
+        addSelect.innerHTML = '<option value="">-- Pilih kost untuk dibandingkan --</option>' +
+            ALL_KOST.map(k => {
+                const isSelected = compareIds.includes(k.id);
+                const suffix = isSelected ? ' [Sudah Ditambahkan]' : '';
+                return `<option value="${k.id}" ${isSelected ? 'disabled class="text-muted"' : ''}>${k.name} (${k.room_type} - ${k.price_display})${suffix}</option>`;
+            }).join('');
+    };
+
+    const renderComparison = () => {
+        let compareIds = Storage.getCompareList();
+        updateSelectOptions(compareIds);
+
+        const selectedKost = compareIds.map(id => ALL_KOST.find(k => k.id === parseInt(id))).filter(Boolean);
+
+        if (selectedKost.length === 0) {
+            if (matrixCard) matrixCard.style.display = 'none';
+            if (emptyBox) emptyBox.style.display = 'block';
+            return;
+        }
+
+        if (matrixCard) matrixCard.style.display = 'block';
+        if (emptyBox) emptyBox.style.display = 'none';
+
+        // Render Thead Kost Headers
+        for (let i = 1; i <= 3; i++) {
+            const col = document.querySelector('.kost-col-' + i);
+            if (!col) continue;
+
+            const kost = selectedKost[i - 1];
+            if (kost) {
+                col.style.display = 'table-cell';
+                col.innerHTML = `
+                    <div class="compare-card-header p-3 text-center position-relative">
+                        <button class="btn-remove-compare" data-remove-id="${kost.id}" title="Hapus dari perbandingan">&times;</button>
+                        <div class="compare-thumb-placeholder mb-2">
+                            <i class="fas fa-home fa-2x text-muted"></i>
+                        </div>
+                        <span class="badge badge-primary badge-sm mb-1">${kost.room_type}</span>
+                        <h4 class="compare-kost-name text-truncate mb-1" title="${kost.name}">
+                            <a href="/kost/${kost.id}/">${kost.name}</a>
+                        </h4>
+                        <div class="compare-score-badge">
+                            <i class="fas fa-star text-accent mr-1"></i> Skor SPK: <strong>${kost.score}%</strong>
+                        </div>
+                    </div>
+                `;
+            } else {
+                col.style.display = 'table-cell';
+                col.innerHTML = `
+                    <div class="compare-card-header p-3 text-center empty-col-slot">
+                        <div class="slot-icon mb-2"><i class="fas fa-plus-circle fa-2x text-primary opacity-50"></i></div>
+                        <p class="text-small text-muted mb-2">Slot Kosong (${i}/3)</p>
+                        <button type="button" class="btn btn-outline-primary btn-sm btn-focus-add">
+                            <i class="fas fa-plus mr-1"></i> Tambah Kost
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render Table Rows (Specifications & Parameters)
+        const rowsConfig = [
+            { section: 'Kalkulasi & Rekomendasi SPK' },
+            { label: 'Skor Total Kecocokan', render: k => `<span class="badge badge-success font-weight-bold" style="font-size: 1rem;">${k.score}% Cocok</span>` },
+            { label: 'Nilai Kriteria Harga', render: k => `<strong>${k.scores ? k.scores.harga : 90}%</strong>` },
+            { label: 'Nilai Kriteria Jarak', render: k => `<strong>${k.scores ? k.scores.jarak : 90}%</strong>` },
+            { label: 'Nilai Kriteria Fasilitas', render: k => `<strong>${k.scores ? k.scores.fasilitas : 90}%</strong>` },
+            { label: 'Nilai Kriteria Keamanan', render: k => `<strong>${k.scores ? k.scores.keamanan : 90}%</strong>` },
+            { label: 'Rating Ulasan Mahasiswa', render: k => `<i class="fas fa-star text-accent"></i> ${k.rating} / 5.0` },
+            
+            { section: 'Biaya Sewa & Syarat' },
+            { label: 'Harga Sewa Bulanan', render: k => `<span class="price-val text-primary font-weight-bold" style="font-size: 1.1rem;">${k.price_display}</span> / bulan` },
+            { label: 'Biaya Listrik', render: k => k.electricity_included ? '<span class="text-success"><i class="fas fa-check-circle"></i> Sudah Termasuk</span>' : '<span class="text-muted"><i class="fas fa-times-circle"></i> Token Mandiri</span>' },
+            
+            { section: 'Lokasi & Dimensi' },
+            { label: 'Jarak ke UKRIDA', render: k => `<strong><i class="fas fa-route text-primary mr-1"></i> ${k.distance} km</strong>` },
+            { label: 'Ukuran Kamar', render: k => `${k.room_size}` },
+            { label: 'Kamar Mandi', render: k => k.bathroom ? '<span class="text-success"><i class="fas fa-check-circle"></i> Dalam Kamar</span>' : '<span class="text-muted">Luar / Bersama</span>' },
+            { label: 'Ketersediaan Kamar', render: k => `<span class="badge badge-info">${k.availability} Kamar Kosong</span>` },
+            
+            { section: 'Fasilitas & Keamanan' },
+            { label: 'Pendingin (AC)', render: k => k.ac ? '<i class="fas fa-check text-success fa-lg"></i>' : '<i class="fas fa-times text-muted fa-lg"></i>' },
+            { label: 'Koneksi Wi-Fi', render: k => k.wifi ? `<span class="text-success"><i class="fas fa-check"></i> ${k.wifi_speed || 'Tersedia'}</span>` : '<i class="fas fa-times text-muted"></i>' },
+            { label: 'Dapur Bersama', render: k => k.kitchen ? '<i class="fas fa-check text-success fa-lg"></i>' : '<i class="fas fa-times text-muted fa-lg"></i>' },
+            { label: 'Layanan Laundry', render: k => k.laundry ? '<i class="fas fa-check text-success fa-lg"></i>' : '<i class="fas fa-times text-muted fa-lg"></i>' },
+            { label: 'Parkir Kendaraan', render: k => k.parking ? '<i class="fas fa-check text-success fa-lg"></i>' : '<i class="fas fa-times text-muted fa-lg"></i>' },
+            { label: 'Kamera CCTV', render: k => k.cctv ? '<i class="fas fa-check text-success fa-lg"></i>' : '<i class="fas fa-times text-muted fa-lg"></i>' },
+            { label: 'Security 24 Jam', render: k => k.security ? '<i class="fas fa-check text-success fa-lg"></i>' : '<i class="fas fa-times text-muted fa-lg"></i>' },
+            { label: 'Akses 24 Jam Bebas', render: k => k.access_24h ? '<i class="fas fa-check text-success fa-lg"></i>' : '<i class="fas fa-times text-muted fa-lg"></i>' },
+            
+            { section: 'Tindakan' },
+            { 
+                label: 'Aksi Langsung', 
+                render: k => `
+                    <div class="d-flex flex-column gap-2 p-2">
+                        <a href="/kost/${k.id}/" class="btn btn-primary btn-sm btn-block">Detail Lengkap</a>
+                    </div>
+                ` 
+            }
+        ];
+
+        let html = '';
+        rowsConfig.forEach(row => {
+            if (row.section) {
+                html += `
+                    <tr class="section-row bg-light">
+                        <td colspan="4" class="font-weight-bold text-primary py-2 px-3">
+                            <i class="fas fa-caret-right mr-1"></i> ${row.section}
+                        </td>
+                    </tr>
+                `;
+            } else {
+                html += `
+                    <tr class="data-row">
+                        <td class="param-title-cell font-weight-500 text-dark bg-white px-3 py-2">${row.label}</td>
+                `;
+                for (let i = 0; i < 3; i++) {
+                    const kost = selectedKost[i];
+                    if (kost) {
+                        html += `<td class="param-val-cell text-center px-3 py-2">${row.render(kost)}</td>`;
+                    } else {
+                        html += `<td class="param-val-cell text-center text-muted px-3 py-2 bg-light">-</td>`;
+                    }
+                }
+                html += `</tr>`;
+            }
+        });
+
+        tbody.innerHTML = html;
+
+        // Attach remove buttons
+        document.querySelectorAll('.btn-remove-compare').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.dataset.removeId);
+                Storage.removeFromCompare(id);
+                renderComparison();
+            });
+        });
+
+        // Attach focus add buttons from empty slots
+        document.querySelectorAll('.btn-focus-add').forEach(btn => {
+            btn.addEventListener('click', () => {
+                addSelect.focus();
+                addSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+    };
+
+    // Add selected
+    const handleAddKost = () => {
+        const id = parseInt(addSelect.value);
+        if (!id) {
+            Toast.show('Silakan pilih salah satu kost dari daftar terlebih dahulu!', 'warning');
+            return;
+        }
+        Storage.addToCompare(id);
+        addSelect.value = '';
+        renderComparison();
+    };
+
+    if (addBtn) addBtn.addEventListener('click', handleAddKost);
+    if (addSelect) {
+        addSelect.addEventListener('change', () => {
+            if (addSelect.value) {
+                handleAddKost();
+            }
+        });
+    }
+
+    // Clear all
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda ingin mengosongkan daftar perbandingan?')) {
+                Storage.saveCompareList([]);
+                renderComparison();
+                Toast.show('Daftar perbandingan telah dikosongkan', 'info');
+            }
+        });
+    }
+
+    // Restore Demo
+    if (restoreDemoBtn) {
+        restoreDemoBtn.addEventListener('click', () => {
+            Storage.saveCompareList([1, 2]);
+            renderComparison();
+            Toast.show('Menampilkan 2 kost demo untuk perbandingan', 'success');
+        });
+    }
+
+    // Print / Download PDF
+    const printBtn = document.getElementById('btnPrintCompare');
+    if (printBtn) {
+        printBtn.addEventListener('click', () => {
+            Toast.show('Membuka jendela cetak / simpan PDF...', 'info');
+            setTimeout(() => {
+                window.print();
+            }, 300);
+        });
+    }
+
+    renderComparison();
+});
+</script>
+{% endblock %}
+

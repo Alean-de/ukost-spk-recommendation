@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Daftar Akun{% endblock %}
+{% block body_class %}auth-page-body{% endblock %}
+
+{% block navbar %}
+<nav class="navbar auth-navbar">
+    <div class="nav-container">
+        <a href="{% url 'home' %}" class="nav-brand">
+            <div class="nav-logo d-flex align-items-center gap-2">
+                <img src="{% static 'images/logo-icon.svg' %}" alt="U Kost Logo" class="brand-logo-icon-only">
+                <span class="logo-text">U Kost</span>
+            </div>
+        </a>
+        <div class="auth-nav-link">
+            <span>Sudah punya akun?</span>
+            <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm">Masuk</a>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <!-- Left Banner -->
+        <div class="auth-banner">
+            <div class="auth-banner-content">
+                <span class="badge badge-accent mb-3"><i class="fas fa-user-plus"></i> Akun Baru</span>
+                <h2>Bergabung dengan Komunitas U Kost</h2>
+                <p>Daftarkan akun mahasiswa UKRIDA Anda untuk menyimpan kost favorit, mencatat riwayat pencarian, dan mendapatkan rekomendasi kost paling akurat.</p>
+                
+                <div class="auth-features">
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle text-accent"></i>
+                        <span>Simpan daftar kost impian & pantau ketersediaan</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle text-accent"></i>
+                        <span>Hitung otomatis jarak akurat ke fakultas & gedung kuliah</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-check-circle text-accent"></i>
+                        <span>Akses penuh ke rincian transparansi nilai SPK</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Form Card -->
+        <div class="auth-form-card">
+            <div class="auth-header">
+                <h1 class="auth-title">Registrasi Mahasiswa</h1>
+                <p class="auth-subtitle">Isi data akademik untuk menyesuaikan lokasi rekomendasi kost</p>
+            </div>
+
+            <form action="{% url 'register' %}" method="POST" class="auth-form" id="registerForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="reg_nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="reg_nama" name="nama" class="form-control" placeholder="Nama lengkap sesuai KTM" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="reg_nim" class="form-label">NIM <span class="text-danger">*</span></label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-id-card input-icon"></i>
+                            <input type="text" id="reg_nim" name="nim" class="form-control" placeholder="Contoh: 412022001" required>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="reg_campus" class="form-label">Kampus Utama <span class="text-danger">*</span></label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-university input-icon"></i>
+                            <select id="reg_campus" name="campus_id" class="form-control form-select" required>
+                                {% for campus in campus_data %}
+                                <option value="{{ campus.id }}">{{ campus.short }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_fakultas" class="form-label">Fakultas / Program Studi <span class="text-danger">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-graduation-cap input-icon"></i>
+                        <select id="reg_fakultas" name="fakultas" class="form-control form-select" required>
+                            <option value="">Pilih Fakultas...</option>
+                            {% for f in fakultas_data %}
+                            <option value="{{ f }}">{{ f }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reg_email" class="form-label">Email Mahasiswa <span class="text-danger">*</span></label>
+                    <div class="input-icon-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="reg_email" name="email" class="form-control" placeholder="nim@student.ukrida.ac.id" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="reg_pass" class="form-label">Kata Sandi <span class="text-danger">*</span></label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="reg_pass" name="password" class="form-control" placeholder="Minimal 6 karakter" required>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="reg_confirm" class="form-label">Konfirmasi Sandi <span class="text-danger">*</span></label>
+                        <div class="input-icon-wrapper">
+                            <i class="fas fa-check-double input-icon"></i>
+                            <input type="password" id="reg_confirm" name="confirm_password" class="form-control" placeholder="Ulangi kata sandi" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input type="checkbox" id="terms" name="terms" class="form-check-input" required checked>
+                    <label for="terms" class="form-check-label text-small">
+                        Saya menyetujui <a href="javascript:void(0)" class="text-primary">Syarat & Ketentuan Penggunaan</a> U Kost.
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <i class="fas fa-user-plus mr-2"></i> Buat Akun Baru
+                </button>
+
+                <p class="auth-footer text-center mt-4">
+                    Sudah memiliki akun? <a href="{% url 'login' %}" class="text-primary font-weight-bold">Masuk Sekarang</a>
+                </p>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

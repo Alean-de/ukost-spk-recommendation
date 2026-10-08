@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Beranda{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-sparkles text-accent"></i>
+                <span>Portal Rekomendasi Kost Mahasiswa UKRIDA</span>
+            </div>
+            <h1 class="hero-title">Temukan Kost yang Sesuai dengan Kebutuhanmu</h1>
+            <p class="hero-description">
+                U Kost membantu kamu menemukan dan membandingkan kost berdasarkan budget, jarak, fasilitas, dan preferensimu dengan sistem perangkingan cerdas dan transparan.
+            </p>
+
+            <!-- Quick Action Box -->
+            <div class="hero-actions">
+                <a href="{% url 'cari_kost' %}" class="btn btn-primary btn-lg pulse-btn">
+                    <i class="fas fa-search-location mr-2"></i> Mulai Cari Kost
+                </a>
+                <a href="#how-it-works" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-info-circle mr-2"></i> Lihat Cara Kerja
+                </a>
+            </div>
+
+            <!-- Quick Value Props -->
+            <div class="hero-stats">
+                <div class="hero-stat-item">
+                    <div class="stat-num">Gratis</div>
+                    <div class="stat-label">Bebas Biaya Layanan</div>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat-item">
+                    <div class="stat-num">120+</div>
+                    <div class="stat-label">Kost Terverifikasi</div>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat-item">
+                    <div class="stat-num">100%</div>
+                    <div class="stat-label">Transparansi Skor</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-card-preview">
+                <div class="preview-badge-top">
+                    <i class="fas fa-crown text-accent mr-1"></i> Rekomendasi Utama #1
+                </div>
+                <div class="preview-image-placeholder">
+                    <i class="fas fa-building fa-4x text-muted"></i>
+                    <span class="preview-tag-type">Putra &bull; 3x4m</span>
+                </div>
+                <div class="preview-body">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h3 class="preview-title">Kost Pondok Mahasiswa Bahagia</h3>
+                        <span class="score-badge"><i class="fas fa-star text-accent mr-1"></i> 94% Cocok</span>
+                    </div>
+                    <p class="preview-location text-muted"><i class="fas fa-map-marker-alt text-primary mr-1"></i> 1.2 km dari UKRIDA Kampus 1</p>
+                    <div class="preview-facilities">
+                        <span><i class="fas fa-wifi"></i> Wi-Fi 50 Mbps</span>
+                        <span><i class="fas fa-snowflake"></i> AC</span>
+                        <span><i class="fas fa-bath"></i> KM Dalam</span>
+                        <span><i class="fas fa-shield-alt"></i> CCTV</span>
+                    </div>
+                    <div class="preview-footer">
+                        <div class="preview-price">
+                            <span class="price-val">Rp1.300.000</span>
+                            <span class="price-unit">/ bulan</span>
+                        </div>
+                        <a href="{% url 'detail_kost' 1 %}" class="btn btn-primary btn-sm">Lihat Detail</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section (Alur SPK) -->
+<section class="section how-it-works-section" id="how-it-works">
+    <div class="container">
+        <div class="section-header text-center">
+            <span class="section-badge">Alur Cerdas</span>
+            <h2 class="section-title">ALUR PENCARIAN CERDAS</h2>
+            <p class="section-subtitle">Proses seleksi terstruktur menggunakan metode Sistem Pendukung Keputusan yang transparan</p>
+        </div>
+
+        <div class="steps-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <div class="step-icon">
+                    <i class="fas fa-sliders-h"></i>
+                </div>
+                <h3 class="step-title">Masukkan Kebutuhan</h3>
+                <p class="step-desc">Tentukan kampus tujuan UKRIDA, batas budget, jarak, dan tipe hunian.</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <div class="step-icon">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <h3 class="step-title">Tentukan Prioritas</h3>
+                <p class="step-desc">Pilih fasilitas impian dan atur tingkat kepentingan kriteria personalmu.</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <div class="step-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h3 class="step-title">Sistem Menghitung Skor</h3>
+                <p class="step-desc">Algoritma SPK mengkalkulasi normalisasi nilai multi-kriteria secara transparan.</p>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <div class="step-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="step-title">Dapatkan Rekomendasi</h3>
+                <p class="step-desc">Daftar kost terurut ranking dengan skor kecocokan tertinggi siap dipilih.</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'cari_kost' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-play mr-2"></i> Mulai Cari Kost Sekarang
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Recommendation Preview -->
+<section class="section featured-section bg-light">
+    <div class="container">
+        <div class="section-header-flex">
+            <div>
+                <span class="section-badge">Pilihan Populer</span>
+                <h2 class="section-title">Rekomendasi Kost Terpopuler</h2>
+                <p class="section-subtitle">Kost dengan nilai kepuasan dan rating tertinggi di sekitar kampus UKRIDA</p>
+            </div>
+            <a href="{% url 'rekomendasi' %}" class="btn btn-outline-primary">
+                Lihat Semua ({{ preview_kost|length }}+) <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+        </div>
+
+        <div class="kost-grid">
+            {% for k in preview_kost %}
+            <div class="kost-card">
+                <div class="kost-card-img-wrapper">
+                    <div class="kost-card-img-placeholder">
+                        <i class="fas fa-home fa-3x text-muted"></i>
+                    </div>
+                    <span class="badge-rank rank-{{ forloop.counter }}">#{{ forloop.counter }}</span>
+                    <button class="btn-favorite" data-action="toggle-favorite" data-id="{{ k.id }}" title="Simpan ke Favorit">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <span class="badge-type">{{ k.room_type }}</span>
+                </div>
+
+                <div class="kost-card-body">
+                    <div class="kost-card-score-row">
+                        <div class="match-score">
+                            <span class="score-num">{{ k.score }}%</span>
+                            <span class="score-text">Kecocokan</span>
+                        </div>
+                        <div class="kost-rating">
+                            <i class="fas fa-star text-accent"></i>
+                            <span>{{ k.rating }}</span>
+                        </div>
+                    </div>
+
+                    <h3 class="kost-card-title">
+                        <a href="{% url 'detail_kost' k.id %}">{{ k.name }}</a>
+                    </h3>
+
+                    <p class="kost-card-location">
+                        <i class="fas fa-map-marker-alt text-primary"></i>
+                        <span>{{ k.distance }} km dari UKRIDA &bull; {{ k.address|truncatewords:6 }}</span>
+                    </p>
+
+                    <div class="kost-card-chips">
+                        {% for f in k.facilities|slice:":3" %}
+                        <span class="chip-sm"><i class="fas fa-check text-success"></i> {{ f }}</span>
+                        {% endfor %}
+                        {% if k.facilities|length > 3 %}
+                        <span class="chip-sm text-muted">+{{ k.facilities|length|add:"-3" }} lainnya</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="kost-card-footer">
+                        <div class="kost-price">
+                            <span class="price-amount">{{ k.price_display }}</span>
+                            <span class="price-period">/ bulan</span>
+                        </div>
+                        <div class="kost-card-actions">
+                            <button class="btn-icon btn-outline-secondary btn-compare" data-action="toggle-compare" data-id="{{ k.id }}" title="Bandingkan">
+                                <i class="fas fa-columns"></i>
+                            </button>
+                            <a href="{% url 'detail_kost' k.id %}" class="btn btn-primary btn-sm">
+                                Detail
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- SPK Value Proposition -->
+<section class="section spk-benefit-section">
+    <div class="container">
+        <div class="spk-benefit-grid">
+            <div class="spk-benefit-content">
+                <span class="section-badge">Kenapa U Kost?</span>
+                <h2 class="section-title">Keputusan Cerdas Tanpa Ragu & Bias</h2>
+                <p class="mb-4 text-muted">
+                    Memilih tempat tinggal selama masa kuliah adalah keputusan penting. U Kost menerapkan metode pembobotan multi-kriteria untuk memvalidasi kost yang benar-benar pas dengan kondisi finansial dan mobilitasmu.
+                </p>
+
+                <div class="benefit-list">
+                    <div class="benefit-item">
+                        <div class="benefit-icon"><i class="fas fa-balance-scale"></i></div>
+                        <div>
+                            <h4>Multi-Criteria Decision Analysis</h4>
+                            <p class="text-muted">Keseimbangan antara harga, jarak tempuh, kelengkapan fasilitas, dan tingkat keamanan.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon"><i class="fas fa-eye"></i></div>
+                        <div>
+                            <h4>Transparansi Perhitungan</h4>
+                            <p class="text-muted">Lihat rincian kontribusi skor per kriteria secara terbuka tanpa algoritma tersembunyi.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon"><i class="fas fa-columns"></i></div>
+                        <div>
+                            <h4>Matriks Komparasi Interaktif</h4>
+                            <p class="text-muted">Bandingkan 2 atau 3 kost pilihanmu berdampingan untuk melihat perbedaan detail secara langsung.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spk-benefit-card">
+                <div class="radar-card-header">
+                    <h3>Simulasi Pembobotan SPK</h3>
+                    <p class="text-small text-muted">Contoh distribusi bobot preferensi mahasiswa</p>
+                </div>
+                <div class="weight-bars">
+                    <div class="weight-bar-item">
+                        <div class="d-flex justify-content-between text-small mb-1">
+                            <span>Harga Sewa (Budget)</span>
+                            <strong>30%</strong>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 30%; background: var(--primary-500);"></div>
+                        </div>
+                    </div>
+                    <div class="weight-bar-item">
+                        <div class="d-flex justify-content-between text-small mb-1">
+                            <span>Jarak ke Kampus</span>
+                            <strong>25%</strong>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 25%; background: var(--blue-500);"></div>
+                        </div>
+                    </div>
+                    <div class="weight-bar-item">
+                        <div class="d-flex justify-content-between text-small mb-1">
+                            <span>Fasilitas Kamar & Kost</span>
+                            <strong>20%</strong>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 20%; background: var(--accent-500);"></div>
+                        </div>
+                    </div>
+                    <div class="weight-bar-item">
+                        <div class="d-flex justify-content-between text-small mb-1">
+                            <span>Keamanan & CCTV</span>
+                            <strong>15%</strong>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 15%; background: var(--success-500);"></div>
+                        </div>
+                    </div>
+                    <div class="weight-bar-item">
+                        <div class="d-flex justify-content-between text-small mb-1">
+                            <span>Rating & Kebersihan</span>
+                            <strong>10%</strong>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: 10%; background: var(--gray-500);"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top text-center">
+                    <a href="{% url 'prioritas' %}" class="btn btn-outline-primary btn-block">
+                        <i class="fas fa-sliders-h mr-1"></i> Sesuaikan Bobot Sendiri
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2 class="cta-title">Siap Menemukan Kost Terbaikmu?</h2>
+        <p class="cta-subtitle">Hanya butuh 2 menit untuk mengisi preferensi dan mendapatkan rekomendasi akurat.</p>
+        <div class="cta-buttons">
+            <a href="{% url 'cari_kost' %}" class="btn btn-accent btn-lg font-weight-bold">
+                <i class="fas fa-bolt mr-2"></i> Mulai Sekarang (Gratis)
+            </a>
+            <a href="{% url 'bandingkan' %}" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-columns mr-2"></i> Buka Matriks Bandingkan
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

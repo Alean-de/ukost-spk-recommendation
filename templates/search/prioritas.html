@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cari Kost - Langkah 3: Bobot Prioritas{% endblock %}
+{% block nav_cari %}active{% endblock %}
+
+{% block content %}
+<div class="wizard-page-wrapper">
+    <div class="container container-narrow">
+        
+        <!-- Wizard Progress Bar -->
+        <div class="wizard-header">
+            <div class="wizard-steps">
+                <div class="wizard-step completed">
+                    <div class="step-badge"><i class="fas fa-check"></i></div>
+                    <span class="step-label">Kebutuhan Dasar</span>
+                </div>
+                <div class="wizard-step-line completed"></div>
+                <div class="wizard-step completed">
+                    <div class="step-badge"><i class="fas fa-check"></i></div>
+                    <span class="step-label">Fasilitas</span>
+                </div>
+                <div class="wizard-step-line completed"></div>
+                <div class="wizard-step active">
+                    <div class="step-badge">3</div>
+                    <span class="step-label">Prioritas</span>
+                </div>
+            </div>
+            <div class="wizard-title-block text-center">
+                <h1 class="wizard-main-title">Atur Prioritas Kebutuhan</h1>
+                <p class="wizard-subtitle">Tentukan aspek apa yang paling penting untuk tempat tinggalmu. Geser slider atau klik tingkat kepentingan di bawahnya.</p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="wizard-card">
+            <form id="step3Form" action="{% url 'rekomendasi' %}" method="GET">
+                
+                <div class="criteria-list mb-4">
+                    {% for crit in criteria %}
+                    <div class="criteria-card-item" data-criterion="{{ crit.id }}">
+                        <div class="criteria-header">
+                            <div class="criteria-icon">
+                                <i class="{{ crit.icon }}"></i>
+                            </div>
+                            <div class="criteria-info">
+                                <h3 class="criteria-name">{{ crit.name }}</h3>
+                                <p class="criteria-desc">{{ crit.description }}</p>
+                            </div>
+                            <div class="criteria-weight-badge">
+                                <span class="weight-label" id="val_label_{{ crit.id }}">Penting (3/4)</span>
+                            </div>
+                        </div>
+
+                        <div class="criteria-slider-wrapper">
+                            <input type="range" class="criteria-range-slider custom-range" 
+                                   id="crit_{{ crit.id }}" 
+                                   name="priority_{{ crit.id }}" 
+                                   min="1" max="4" step="1" value="3" 
+                                   data-crit-id="{{ crit.id }}">
+                            
+                            <div class="criteria-levels" id="levels_{{ crit.id }}">
+                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="1">1. Tidak Penting</button>
+                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="2">2. Cukup</button>
+                                <button type="button" class="level-btn active" data-crit-id="{{ crit.id }}" data-value="3">3. Penting</button>
+                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="4">4. Sangat Penting</button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Weight Summary Preview -->
+                <div class="weight-preview-box mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                        <h4 class="font-weight-600 mb-0">Distribusi Bobot SPK Relatif:</h4>
+                        <span class="badge badge-success px-3 py-1 font-weight-bold" id="totalWeightStatus">
+                            <i class="fas fa-check-circle mr-1"></i> Total Prioritas: 100% (Sesuai)
+                        </span>
+                    </div>
+                    <div class="stacked-progress-bar" id="stackedBar">
+                        <!-- Filled by JS -->
+                    </div>
+                    <div class="stacked-bar-legend" id="stackedLegend">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <!-- Wizard Actions -->
+                <div class="wizard-actions mt-5">
+                    <a href="{% url 'cari_kost' %}" class="btn btn-outline-secondary btn-lg btn-wizard-back">
+                        <i class="fas fa-arrow-left mr-2"></i> Kembali ke Kebutuhan
+                    </a>
+                    <div class="wizard-action-group d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-lg" id="btnSaveDraft">
+                            <i class="fas fa-save mr-2"></i> Simpan Draft
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg pulse-btn">
+                            <i class="fas fa-calculator mr-2"></i> Lihat Rekomendasi Kost
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sliders = document.querySelectorAll('.criteria-range-slider');
+    const stackedBar = document.getElementById('stackedBar');
+    const stackedLegend = document.getElementById('stackedLegend');
+    const levelBtns = document.querySelectorAll('.level-btn');
+
+    const levelText = {
+        1: 'Tidak Penting (1/4)',
+        2: 'Cukup (2/4)',
+        3: 'Penting (3/4)',
+        4: 'Sangat Penting (4/4)'
+    };
+
+    const colors = {
+        harga: '#1a2f6d',
+        jarak: '#3b82f6',
+        fasilitas: '#f5a623',
+        keamanan: '#10b981',
+        kenyamanan: '#8b5cf6'
+    };
+
+    const names = {
+        harga: 'Harga Sewa',
+        jarak: 'Jarak Kampus',
+        fasilitas: 'Fasilitas',
+        keamanan: 'Keamanan',
+        kenyamanan: 'Kenyamanan'
+    };
+
+    const updateWeights = () => {
+        let total = 0;
+        const values = {};
+
+        sliders.forEach(slider => {
+            const id = slider.dataset.critId;
+            const val = parseInt(slider.value) || 3;
+            values[id] = val;
+            total += val;
+
+            // Update badge label
+            const labelEl = document.getElementById('val_label_' + id);
+            if (labelEl) labelEl.textContent = levelText[val] || `${val}/4`;
+
+            // Update active state on level buttons
+            const levelContainer = document.getElementById('levels_' + id);
+            if (levelContainer) {
+                levelContainer.querySelectorAll('.level-btn').forEach(btn => {
+                    const btnVal = parseInt(btn.dataset.value);
+                    btn.classList.toggle('active', btnVal === val);
+                });
+            }
+        });
+
+        // Update Stacked Bar
+        if (stackedBar && stackedLegend && total > 0) {
+            stackedBar.innerHTML = '';
+            stackedLegend.innerHTML = '';
+
+            Object.keys(values).forEach(id => {
+                const pct = Math.round((values[id] / total) * 100);
+                
+                // Bar segment
+                const segment = document.createElement('div');
+                segment.className = 'stacked-segment';
+                segment.style.width = pct + '%';
+                segment.style.backgroundColor = colors[id] || '#666';
+                segment.title = `${names[id] || id}: ${pct}%`;
+                stackedBar.appendChild(segment);
+
+                // Legend item
+                const legItem = document.createElement('div');
+                legItem.className = 'legend-item';
+                legItem.innerHTML = `
+                    <span class="legend-color-dot" style="background-color: ${colors[id]}"></span>
+                    <span class="legend-name">${names[id] || id}</span>
+                    <strong class="legend-pct">${pct}%</strong>
+                `;
+                stackedLegend.appendChild(legItem);
+            });
+        }
+    };
+
+    // Load saved priorities if any
+    const saved = Storage.getSearchPrefs();
+    if (saved && saved.priorities) {
+        Object.keys(saved.priorities).forEach(k => {
+            const slider = document.getElementById('crit_' + k);
+            if (slider && saved.priorities[k]) {
+                const val = Math.min(4, Math.max(1, parseInt(saved.priorities[k])));
+                slider.value = val;
+            }
+        });
+    }
+
+    // Attach input & change events on all sliders
+    sliders.forEach(s => {
+        s.addEventListener('input', updateWeights);
+        s.addEventListener('change', updateWeights);
+    });
+
+    // Level buttons click handler
+    levelBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const critId = btn.dataset.critId;
+            const val = btn.dataset.value;
+            const slider = document.getElementById('crit_' + critId);
+            if (slider) {
+                slider.value = val;
+                updateWeights();
+            }
+        });
+    });
+
+    updateWeights();
+
+    // Save Draft button
+    const btnSaveDraft = document.getElementById('btnSaveDraft');
+    if (btnSaveDraft) {
+        btnSaveDraft.addEventListener('click', () => {
+            const priorities = {};
+            sliders.forEach(s => {
+                priorities[s.dataset.critId] = parseInt(s.value) || 3;
+            });
+            Storage.saveSearchPrefs({ priorities });
+            Toast.show('Draft preferensi prioritas berhasil disimpan!', 'success');
+        });
+    }
+
+    // Save on submit & add search history record
+    const form = document.getElementById('step3Form');
+    if (form) {
+        form.addEventListener('submit', () => {
+            const priorities = {};
+            sliders.forEach(s => {
+                priorities[s.dataset.critId] = parseInt(s.value) || 3;
+            });
+
+            Storage.saveSearchPrefs({ priorities });
+
+            // Add to history
+            const now = new Date();
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            const fullPrefs = Storage.getSearchPrefs();
+            Storage.addSearchHistory({
+                id: Date.now(),
+                date: dateStr,
+                time: timeStr,
+                campus: fullPrefs.campus === '2' ? 'UKRIDA Kampus 2' : 'UKRIDA Kampus 1',
+                budget: 'Rp' + (fullPrefs.max_price || 2000000).toLocaleString('id-ID'),
+                distance: (fullPrefs.max_distance || 3.0).toFixed(1) + ' km',
+                priority: 'Kustom (' + Object.keys(priorities).length + ' Kriteria)',
+                result_count: 5,
+                status: 'completed'
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
+
