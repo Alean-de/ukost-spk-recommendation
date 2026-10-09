@@ -10,6 +10,29 @@ class University(models.Model):
     def __str__(self):
         return self.name
 
+class Faculty(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+class StudyProgram(models.Model):
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name="study_programs")
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.name} - {self.faculty.name}"
+
+class UserDetail(models.Model):
+    university = models.ForeignKey(University, on_delete=models.CASCADE, related_name="studying_at")
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, related_name="from_the_faculty")
+    study_program = models.ForeignKey(StudyProgram, on_delete=models.CASCADE, related_name="from_the_study_program", blank=True, null=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    nim = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f"{self.user.username} ({self.nim})"
+
 class Kost(models.Model):
     class GenderType(models.TextChoices):
         CAMPUR = 'Campur'
@@ -40,7 +63,7 @@ class Facility(models.Model):
         return self.name
 
 class KostPromotion(models.Model):
-    kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name='promotions')
+    kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name="promotions")
     discount_name = models.CharField(max_length=255)
     is_first_month_promo = models.BooleanField(default=False)
     first_month_discount = models.IntegerField(default=0, help_text='Potongan harga pada bulan pertama')
@@ -53,8 +76,8 @@ class KostPromotion(models.Model):
         return f'{self.kost.name} - {self.discount_name}'
 
 class KostFacility(models.Model):
-    kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name='kost_facilities')
-    facility = models.ForeignKey(Facility, on_delete=models.CASCADE, related_name='facility_kosts')
+    kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name="kost_facilities")
+    facility = models.ForeignKey(Facility, on_delete=models.CASCADE, related_name="facility_kosts")
 
     class Meta:
         unique_together = ('kost', 'facility')
@@ -65,7 +88,7 @@ class KostFacility(models.Model):
 
 class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_favorites")
-    kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name='favorited_by')
+    kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name="favorited_by")
     time_added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -76,7 +99,7 @@ class Favorite(models.Model):
 
 class History(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="search_histories")
-    university = models.ForeignKey(University, on_delete=models.CASCADE, related_name='histories')
+    university = models.ForeignKey(University, on_delete=models.CASCADE, related_name="histories")
     budget_limit = models.IntegerField()
     radius_limit = models.IntegerField()
     facility = models.JSONField()

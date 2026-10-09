@@ -11,49 +11,42 @@ from .mock_data import (
     get_kost_for_landing, CAMPUS_DATA, FAKULTAS_DATA,
     FACILITIES_LIST, PRIORITY_CRITERIA, MOCK_HISTORY, MOCK_KOST_DATA
 )
+from .forms import StudentRegisterForm, StudentLoginForm
+from django.contrib import messages
+from django.contrib.auth import login
 
 
 def login_view(request):
     """Login page."""
     if request.method == 'POST':
-        # Mock authentication - accept any credentials
-        nim = request.POST.get('nim', '')
-        password = request.POST.get('password', '')
-
-        if nim and password:
-            request.session['is_authenticated'] = True
-            request.session['user'] = {
-                'nim': nim,
-                'name': 'Jonathan Agustinus',
-                'campus': 'UKRIDA Kampus 1',
-                'fakultas': 'Fakultas Teknik & Ilmu Komputer',
-                'email': f'{nim}@student.ukrida.ac.id',
-            }
+        form = StudentLoginForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            login(request, user)
             return redirect('home')
-        else:
-            return render(request, 'auth/login.html', {
-                'error': 'NIM dan Password harus diisi.',
-                'campus_data': CAMPUS_DATA,
-                'fakultas_data': FAKULTAS_DATA,
-            })
+    else:
+        form = StudentLoginForm()
 
-    return render(request, 'auth/login.html', {
-        'campus_data': CAMPUS_DATA,
-        'fakultas_data': FAKULTAS_DATA,
-    })
+
+    return render(request, 'auth/login.html', {'form': form})
 
 
 def register_view(request):
     """Registration page."""
     if request.method == 'POST':
-        # Mock registration
-        request.session['registration_success'] = True
-        return redirect('login')
+        form = StudentRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, 'Registrasi Berhasil'
+            )
+            return redirect('login')
+        else:
+            print(form.errors)
+    else:
+        form = StudentRegisterForm()
 
-    return render(request, 'auth/register.html', {
-        'campus_data': CAMPUS_DATA,
-        'fakultas_data': FAKULTAS_DATA,
-    })
+    return render(request, 'auth/register.html', {'form': form})
 
 
 def logout_view(request):

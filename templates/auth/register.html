@@ -62,7 +62,7 @@
                     <label for="reg_nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
                     <div class="input-icon-wrapper">
                         <i class="fas fa-user input-icon"></i>
-                        <input type="text" id="reg_nama" name="nama" class="form-control" placeholder="Nama lengkap sesuai KTM" required>
+                        {{ form.full_name }}
                     </div>
                 </div>
 
@@ -71,40 +71,25 @@
                         <label for="reg_nim" class="form-label">NIM <span class="text-danger">*</span></label>
                         <div class="input-icon-wrapper">
                             <i class="fas fa-id-card input-icon"></i>
-                            <input type="text" id="reg_nim" name="nim" class="form-control" placeholder="Contoh: 412022001" required>
+                            {{ form.nim }}
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="reg_campus" class="form-label">Kampus Utama <span class="text-danger">*</span></label>
-                        <div class="input-icon-wrapper">
-                            <i class="fas fa-university input-icon"></i>
-                            <select id="reg_campus" name="campus_id" class="form-control form-select" required>
-                                {% for campus in campus_data %}
-                                <option value="{{ campus.id }}">{{ campus.short }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                        {{ form.university }}
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label for="reg_fakultas" class="form-label">Fakultas / Program Studi <span class="text-danger">*</span></label>
-                    <div class="input-icon-wrapper">
-                        <i class="fas fa-graduation-cap input-icon"></i>
-                        <select id="reg_fakultas" name="fakultas" class="form-control form-select" required>
-                            <option value="">Pilih Fakultas...</option>
-                            {% for f in fakultas_data %}
-                            <option value="{{ f }}">{{ f }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    {{ form.faculty }}
                 </div>
 
                 <div class="form-group">
                     <label for="reg_email" class="form-label">Email Mahasiswa <span class="text-danger">*</span></label>
                     <div class="input-icon-wrapper">
                         <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="reg_email" name="email" class="form-control" placeholder="nim@student.ukrida.ac.id" required>
+                        {{ form.email }}
                     </div>
                 </div>
 
@@ -113,14 +98,14 @@
                         <label for="reg_pass" class="form-label">Kata Sandi <span class="text-danger">*</span></label>
                         <div class="input-icon-wrapper">
                             <i class="fas fa-lock input-icon"></i>
-                            <input type="password" id="reg_pass" name="password" class="form-control" placeholder="Minimal 6 karakter" required>
+                           {{ form.password1 }}
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="reg_confirm" class="form-label">Konfirmasi Sandi <span class="text-danger">*</span></label>
                         <div class="input-icon-wrapper">
                             <i class="fas fa-check-double input-icon"></i>
-                            <input type="password" id="reg_confirm" name="confirm_password" class="form-control" placeholder="Ulangi kata sandi" required>
+                            {{ form.password2 }}
                         </div>
                     </div>
                 </div>
