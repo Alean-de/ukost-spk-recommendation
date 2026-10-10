@@ -78,7 +78,7 @@
                     <label for="nim" class="form-label">Nomor Induk Mahasiswa (NIM) <span class="text-danger">*</span></label>
                     <div class="input-icon-wrapper">
                         <i class="fas fa-id-card input-icon"></i>
-                        <input type="text" id="nim" name="nim" class="form-control" placeholder="Contoh: 412022001" required autofocus value="412022001">
+                        {{ form.nim }}
                     </div>
                 </div>
 
@@ -86,11 +86,7 @@
                     <label for="campus_select" class="form-label">Kampus UKRIDA</label>
                     <div class="input-icon-wrapper">
                         <i class="fas fa-university input-icon"></i>
-                        <select id="campus_select" name="campus_id" class="form-control form-select">
-                            {% for campus in campus_data %}
-                            <option value="{{ campus.id }}">{{ campus.name }}</option>
-                            {% endfor %}
-                        </select>
+                        {{ form.university }}
                     </div>
                 </div>
 
@@ -101,7 +97,7 @@
                     </div>
                     <div class="input-icon-wrapper">
                         <i class="fas fa-lock input-icon"></i>
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Masukkan kata sandi" required value="password123">
+                        {{ form.password }}
                         <button type="button" class="btn-toggle-password" id="togglePassword" aria-label="Lihat password">
                             <i class="far fa-eye" id="eyeIcon"></i>
                         </button>

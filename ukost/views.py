@@ -11,57 +11,51 @@ from .mock_data import (
     get_kost_for_landing, CAMPUS_DATA, FAKULTAS_DATA,
     FACILITIES_LIST, PRIORITY_CRITERIA, MOCK_HISTORY, MOCK_KOST_DATA
 )
+from .forms import StudentRegisterForm, StudentLoginForm
+from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 
 
 def login_view(request):
     """Login page."""
     if request.method == 'POST':
-        # Mock authentication - accept any credentials
-        nim = request.POST.get('nim', '')
-        password = request.POST.get('password', '')
-
-        if nim and password:
-            request.session['is_authenticated'] = True
-            request.session['user'] = {
-                'nim': nim,
-                'name': 'Jonathan Agustinus',
-                'campus': 'UKRIDA Kampus 1',
-                'fakultas': 'Fakultas Teknik & Ilmu Komputer',
-                'email': f'{nim}@student.ukrida.ac.id',
-            }
+        form = StudentLoginForm(request.POST)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            login(request, user)
             return redirect('home')
-        else:
-            return render(request, 'auth/login.html', {
-                'error': 'NIM dan Password harus diisi.',
-                'campus_data': CAMPUS_DATA,
-                'fakultas_data': FAKULTAS_DATA,
-            })
+    else:
+        form = StudentLoginForm()
 
-    return render(request, 'auth/login.html', {
-        'campus_data': CAMPUS_DATA,
-        'fakultas_data': FAKULTAS_DATA,
-    })
+
+    return render(request, 'auth/login.html', {'form': form})
 
 
 def register_view(request):
     """Registration page."""
     if request.method == 'POST':
-        # Mock registration
-        request.session['registration_success'] = True
-        return redirect('login')
+        form = StudentRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request, 'Registrasi Berhasil'
+            )
+            return redirect('login')
+        else:
+            print(form.errors)
+    else:
+        form = StudentRegisterForm()
 
-    return render(request, 'auth/register.html', {
-        'campus_data': CAMPUS_DATA,
-        'fakultas_data': FAKULTAS_DATA,
-    })
+    return render(request, 'auth/register.html', {'form': form})
 
-
+@login_required
 def logout_view(request):
     """Logout and clear session."""
     request.session.flush()
     return redirect('login')
 
-
+@login_required
 def home_view(request):
     """Landing page / Homepage."""
     preview_kost = get_kost_for_landing()
@@ -71,7 +65,7 @@ def home_view(request):
     }
     return render(request, 'home/index.html', context)
 
-
+@login_required
 def cari_kost_view(request):
     """Search preferences - Step 1: Basic Needs."""
     context = {
@@ -81,7 +75,7 @@ def cari_kost_view(request):
     }
     return render(request, 'search/preference.html', context)
 
-
+@login_required
 def fasilitas_view(request):
     """Search preferences - Step 2: Facilities."""
     context = {
@@ -91,7 +85,7 @@ def fasilitas_view(request):
     }
     return render(request, 'search/fasilitas.html', context)
 
-
+@login_required
 def prioritas_view(request):
     """Search preferences - Step 3: Priority."""
     context = {
@@ -101,7 +95,7 @@ def prioritas_view(request):
     }
     return render(request, 'search/prioritas.html', context)
 
-
+@login_required
 def rekomendasi_view(request):
     """Recommendation results page."""
     recommended = get_recommended_kost(5)
@@ -133,7 +127,7 @@ def rekomendasi_view(request):
     }
     return render(request, 'recommendation/result.html', context)
 
-
+@login_required
 def detail_kost_view(request, kost_id):
     """Detail page for a specific kost."""
     kost = get_kost_by_id(kost_id)
@@ -164,7 +158,7 @@ def detail_kost_view(request, kost_id):
     }
     return render(request, 'kost/detail.html', context)
 
-
+@login_required
 def bandingkan_view(request):
     """Comparison page."""
     all_kost = get_all_kost()
@@ -200,7 +194,7 @@ def bandingkan_view(request):
     }
     return render(request, 'comparison/index.html', context)
 
-
+@login_required
 def favorit_view(request):
     """Favorites and History page."""
     all_kost = get_all_kost()
@@ -226,7 +220,7 @@ def favorit_view(request):
     }
     return render(request, 'archive/index.html', context)
 
-
+@login_required
 def riwayat_view(request):
     """Redirect to favorit page with history tab active."""
     return redirect('/favorit/?tab=riwayat')
