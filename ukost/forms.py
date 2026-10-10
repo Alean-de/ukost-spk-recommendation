@@ -154,13 +154,22 @@ class StudentLoginForm(forms.Form):
         password = cleaned_data.get('password')
 
         if nim and password and university:
-            user = authenticate(username=nim, university=university, password=password)
+            try:
+                user_detail = UserDetail.objects.select_related('user').get(
+                    nim=nim,
+                    university=university
+                )
 
-            if user is None:
-                raise forms.ValidationError('Nim atau Password Anda Salah')
-            if not user.is_active:
-                raise forms.ValidationError('Akun Ini Sudah Tidak Aktif')
+                user_obj = user_detail.user
 
-            cleaned_data['user'] = user
+                user = authenticate(username=user_obj.username, password=password)
+
+                if user is None:
+                    raise forms.ValidationError('Nim/Universitas atau Password Anda Salah')
+                if not user.is_active:
+                    raise forms.ValidationError('Akun Ini Sudah Tidak Aktif')
+                cleaned_data['user'] = user
+            except UserDetail.DoesNotExist:
+                raise forms.ValidationError('NIM/Universitas atau Password Anda Salah')
 
         return cleaned_data

@@ -7,11 +7,17 @@ class University(models.Model):
     location = models.CharField(max_length=255)
     address_detail = models.CharField(max_length=355)
 
+    class Meta:
+        verbose_name_plural = 'Universities'
+
     def __str__(self):
         return self.name
 
 class Faculty(models.Model):
     name = models.CharField(max_length=255)
+
+    class Meta:
+            verbose_name_plural = 'Faculties'
 
     def __str__(self):
         return self.name
@@ -39,6 +45,7 @@ class Kost(models.Model):
         PUTRA = 'Putra'
         PUTRI = 'Putri'
 
+    id = models.CharField(max_length=20, primary_key=True)
     gender_type = models.CharField(
         max_length=10,
         choices=GenderType.choices,
@@ -58,6 +65,9 @@ class Kost(models.Model):
 
 class Facility(models.Model):
     name = models.CharField(max_length=255)
+
+    class Meta:
+            verbose_name_plural = 'Facilities'
 
     def __str__(self):
         return self.name
@@ -81,6 +91,7 @@ class KostFacility(models.Model):
 
     class Meta:
         unique_together = ('kost', 'facility')
+        verbose_name_plural = 'Kost Facilities'
 
     def __str__(self):
         return f"{self.kost.name} - {self.facility.name}"

@@ -81,6 +81,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+AUTHENTICATION_BACKEND = [
+    'ukost.backends.StudentLoginBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
 # Internationalization
 LANGUAGE_CODE = 'id'
 TIME_ZONE = 'Asia/Jakarta'
@@ -96,7 +101,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 86400  # 24 hours
 
 # Login URL
-LOGIN_URL = '/login/'
+LOGIN_URL = 'login'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
