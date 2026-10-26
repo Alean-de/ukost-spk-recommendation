@@ -173,3 +173,11 @@ class StudentLoginForm(forms.Form):
                 raise forms.ValidationError('NIM/Universitas atau Password Anda Salah')
 
         return cleaned_data
+
+class PreferenceForm(forms.Form):
+    university = forms.ModelChoiceField(
+            queryset=University.objects.all(),
+            required=True,
+            empty_label='Pilih Kampus Utama Anda',
+            widget=forms.Select(attrs={'class': 'form-control'})
+        )

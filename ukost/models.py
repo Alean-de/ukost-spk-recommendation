@@ -39,6 +39,9 @@ class UserDetail(models.Model):
     def __str__(self):
         return f"{self.user.username} ({self.nim})"
 
+class Cluster(models.Model):
+    cluster = models.CharField(max_length=255)
+
 class Kost(models.Model):
     class GenderType(models.TextChoices):
         CAMPUR = 'Campur'
@@ -46,6 +49,7 @@ class Kost(models.Model):
         PUTRI = 'Putri'
 
     id = models.CharField(max_length=20, primary_key=True)
+    cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE, related_name='kost_list', null=True, blank=True)
     gender_type = models.CharField(
         max_length=10,
         choices=GenderType.choices,
@@ -61,7 +65,7 @@ class Kost(models.Model):
     no_deposit_required = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.cluster_id}"
 
 class Facility(models.Model):
     name = models.CharField(max_length=255)
@@ -111,6 +115,7 @@ class Favorite(models.Model):
 class History(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="search_histories")
     university = models.ForeignKey(University, on_delete=models.CASCADE, related_name="histories")
+    gender = models.ExpressionList("putra", "putri", "campur")
     budget_limit = models.IntegerField()
     radius_limit = models.IntegerField()
     facility = models.JSONField()

@@ -9,7 +9,8 @@ from .models import (
     KostPromotion,
     KostFacility,
     Favorite,
-    History
+    History,
+    Cluster,
 )
 
 # Register your models here.
@@ -38,3 +39,4 @@ admin.site.register(KostPromotion)
 admin.site.register(KostFacility)
 admin.site.register(Favorite)
 admin.site.register(History)
+admin.site.register(Cluster)
