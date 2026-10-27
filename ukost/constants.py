@@ -14,3 +14,9 @@ FACILITY_WEIGHTS = {
     5 : 4.68,
     6 : 4.43,
 }
+
+CRITERIA_BASE_WEIGHTS = {
+    'harga': 4.60,
+    'jarak': 4.66,
+    'facility': round(sum(FACILITY_WEIGHTS.values()) / len(FACILITY_WEIGHTS), 2),
+}

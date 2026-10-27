@@ -3,6 +3,7 @@ URL routing for U Kost application.
 """
 from django.urls import path
 from . import views
+from . import api_views
 
 urlpatterns = [
     # Auth
@@ -22,6 +23,8 @@ urlpatterns = [
     path('riwayat/', views.riwayat_view, name='riwayat'),
 
     # API endpoints
-    path('api/kost/', views.api_kost_list, name='api_kost_list'),
-    path('api/kost/<int:kost_id>/', views.api_kost_detail, name='api_kost_detail'),
+    path('api/kost/', api_views.KostListAPI.as_view(), name='api_kost_list'),
+    path('api/kost/<str:kost_id>/', api_views.KostDetailAPI.as_view(), name='api_kost_detail'),
+    path('api/rekomendasi/', api_views.RecommendationAPI.as_view(), name='api_rekomendasi'),
+    path('api/riwayat/', api_views.HistoryListAPI.as_view(), name='api_riwayat'),
 ]

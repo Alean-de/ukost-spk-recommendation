@@ -12,7 +12,7 @@ from .mock_data import (
     FACILITIES_LIST, MOCK_HISTORY, MOCK_KOST_DATA
 )
 from .forms import StudentRegisterForm, StudentLoginForm
-from .models import University, Facility
+from .models import University, Facility, History
 from .services import apply_hard_filters, calculate_topsis
 from .constants import PRIORITY_CRITERIA
 from django.contrib import messages
@@ -69,47 +69,80 @@ def home_view(request):
 
 @login_required
 def cari_kost_view(request):
-    """Search preferences - Step 1: Basic Needs."""
+    if request.method == 'POST':
+        request.session['search_prefs'] = {
+            'campus': request.POST.get('campus'),
+            'room_type': request.POST.get('room_type', 'Semua'),
+            'max_price': request.POST.get('max_price'),
+            'max_distance': request.POST.get('max_distance'),
+        }
+        return redirect('fasilitas')
     campuses = University.objects.all()
     return render(request, 'search/preference.html', {'campus_data': campuses, 'step': 1})
 
 @login_required
 def fasilitas_view(request):
-    """Search preferences - Step 2: Facilities."""
+    if request.method == 'POST':
+        prefs = request.session.get('search_prefs')
+        if not prefs:
+            return redirect('cari_kost')
+        prefs['facilities'] = request.POST.getlist('facilities')
+        request.session['search_prefs'] = prefs
+        return redirect('prioritas')
     facilities = Facility.objects.all()
     return render(request, 'search/fasilitas.html', {'facilities': facilities, 'step': 2})
 
 @login_required
 def prioritas_view(request):
-    """Search preferences - Step 3: Priority."""
+    if request.method == 'POST':
+        prefs = request.session.get('search_prefs')
+        if not prefs:
+            return redirect('cari_kost')
+
+        priorities = {
+            crit['id']: int(request.POST.get(f"priority_{crit['id']}", 3))
+            for crit in PRIORITY_CRITERIA
+        }
+        prefs['priorities'] = priorities
+        request.session['search_prefs'] = prefs
+
+        History.objects.create(
+            user=request.user,
+            university_id=prefs.get('campus'),
+            gender=prefs.get('room_type', 'Semua'),
+            budget_limit=int(prefs.get('max_price') or 0),
+            radius_limit=int(float(prefs.get('max_distance') or 0)),
+            facility=prefs.get('facilities', []),
+            criteria_weight=priorities,
+        )
+        return redirect('rekomendasi')
     return render(request, 'search/prioritas.html', {'criteria': PRIORITY_CRITERIA, 'step': 3})
 
 @login_required
 def rekomendasi_view(request):
-    """Recommendation results page."""
-    campus_id = request.GET.get('campus') or request.GET.get('university')
-    room_type = request.GET.get('room_type', 'Semua')
-    max_price = request.GET.get('max_price')
-    max_distance = request.GET.get('max_distance')
-    user_facilities = request.GET.getlist('facilities')
+    prefs = request.session.get('search_prefs')
+    if not prefs or 'priorities' not in prefs:
+        return redirect('cari_kost')
 
-    user_priorities = {}
-    for crit in PRIORITY_CRITERIA:
-        crit_id = crit['id']
-        user_priorities[crit_id] = int(request.GET.get(f'priority_{crit_id}', 3))
+    campus_id = prefs.get('campus')
+    room_type = prefs.get('room_type', 'Semua')
+    max_price = prefs.get('max_price')
+    max_distance = prefs.get('max_distance')
+    mandatory = [int(f) for f in prefs.get('facilities', []) if str(f).isdigit()]
+    user_priorities = {
+        crit['id']: int(prefs['priorities'].get(crit['id'], 3))
+        for crit in PRIORITY_CRITERIA
+    }
 
     filtered_kosts = apply_hard_filters(
         campus_id=campus_id,
         room_type=room_type,
         max_price=max_price,
-        max_distance=max_distance
+        max_distance=max_distance,
+        mandatory_facilities=mandatory,
     )
-
-    print("Jumlah Kost Lolos Hard Filter:", filtered_kosts.count())
-
     results = calculate_topsis(
         kost=filtered_kosts,
-        user_facilities=user_facilities,
         user_priorities=user_priorities,
         univ_id=campus_id,
     )
@@ -117,9 +150,8 @@ def rekomendasi_view(request):
     context = {
         'recommended': results[:5],
         'all_kost': results,
-        'user': request.session.get('user', {})
+        'user': request.session.get('user', {}),
     }
-    
     return render(request, 'recommendation/result.html', context)
 
 @login_required
@@ -219,29 +251,3 @@ def favorit_view(request):
 def riwayat_view(request):
     """Redirect to favorit page with history tab active."""
     return redirect('/favorit/?tab=riwayat')
-
-
-# API endpoints for AJAX operations
-@require_http_methods(["GET"])
-def api_kost_list(request):
-    """API to get all kost data as JSON."""
-    return JsonResponse({'kost': [{
-        'id': k['id'],
-        'name': k['name'],
-        'price': k['price'],
-        'price_display': k['price_display'],
-        'distance': k['distance'],
-        'rating': k['rating'],
-        'room_type': k['room_type'],
-        'facilities': k['facilities'],
-        'score': k['score'],
-    } for k in get_all_kost()]})
-
-
-@require_http_methods(["GET"])
-def api_kost_detail(request, kost_id):
-    """API to get single kost data as JSON."""
-    kost = get_kost_by_id(kost_id)
-    if kost:
-        return JsonResponse({'kost': kost})
-    return JsonResponse({'error': 'Kost not found'}, status=404)

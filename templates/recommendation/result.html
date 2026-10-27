@@ -118,7 +118,7 @@
 
                     <p class="kost-card-location">
                         <i class="fas fa-map-marker-alt text-primary"></i>
-                        <span>{{ k.distance}} km ke kampus &bull; {{ k.kost.address_details }}</span>
+                        <span>{{ k.distance}} m ke kampus &bull; {{ k.kost.address_details }}</span>
                     </p>
 
                     <!-- Mini Baris Skor Kriteria Kuantitatif (Harga, Jarak, Fasilitas) -->
@@ -142,7 +142,6 @@
                             <li>Jarak sangat dekat ke kampus ({{ k.distance }} km)</li>
                             <li>Wi-Fi cepat {{ k.wifi_speed|default:"tersedia" }}</li>
                             <li>Kamar mandi dalam &amp; AC aktif</li>
-                            <li>Keamanan lingkungan terjamin (Security &amp; CCTV)</li>
                         </ul>
                     </div>
                     {% endif %}
@@ -160,10 +159,6 @@
                         <div class="mini-score-bar" title="Kelengkapan Fasilitas: {{ k.scores.fasilitas }}%">
                             <span class="mini-label">Fasilitas ({{ k.scores.fasilitas }}%)</span>
                             <div class="mini-bar-bg"><div class="mini-bar-val bg-warning" style="width: {{ k.scores.fasilitas }}%;"></div></div>
-                        </div>
-                        <div class="mini-score-bar" title="Keamanan: {{ k.scores.keamanan }}%">
-                            <span class="mini-label">Keamanan ({{ k.scores.keamanan }}%)</span>
-                            <div class="mini-bar-bg"><div class="mini-bar-val bg-success" style="width: {{ k.scores.keamanan }}%;"></div></div>
                         </div>
                     </div>
 
@@ -296,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('prefPrice').textContent = 'Rp' + parseInt(saved.max_price).toLocaleString('id-ID');
     }
     if (saved.max_distance) {
-        document.getElementById('prefDistance').textContent = parseFloat(saved.max_distance).toFixed(1) + ' km';
+        document.getElementById('prefDistance').textContent = parseFloat(saved.max_distance).toFixed(1) + ' m';
     }
 
     // Sort & Filter Handlers

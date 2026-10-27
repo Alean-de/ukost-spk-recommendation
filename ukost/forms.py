@@ -219,9 +219,9 @@ class PreferenceForm(forms.Form):
             'type': 'range',
             'id': 'distanceSlider',
             'class': 'custom-range',
-            'min': '0.5',
-            'max': '8.0',
-            'step': '0.5',
+            'min': '500',
+            'max': '8000',
+            'step': '500',
         })
     )
 

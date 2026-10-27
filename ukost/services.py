@@ -1,7 +1,7 @@
 import numpy as np
 from django.db.models import Q
-from .models import Kost
-from .constants import PRIORITY_CRITERIA, FACILITY_WEIGHTS
+from .models import Kost, Facility
+from .constants import PRIORITY_CRITERIA, FACILITY_WEIGHTS, CRITERIA_BASE_WEIGHTS
 
 
 def apply_hard_filters(campus_id, room_type=None, max_price=None, max_distance=None, mandatory_facilities=None):
@@ -23,28 +23,25 @@ def apply_hard_filters(campus_id, room_type=None, max_price=None, max_distance=N
         else:
             filters &= Q(distance_to_campus_1__lte=float(max_distance))
 
-    return Kost.objects.filter(filters)
+    queryset = Kost.objects.filter(filters)
+    for fac_id in mandatory_facilities or []:
+        queryset = queryset.filter(kost_facilities__facility_id=fac_id)
+    return queryset.distinct()
 
-def calculate_facility_score(kost_facility_ids, user_facility_ids):
-    if not user_facility_ids:
-        return 100.0
+def calculate_facility_score(kost_facility_ids, all_facility_ids):
+    total = sum(FACILITY_WEIGHTS.get(f, 3.0) for f in all_facility_ids)
+    if total == 0:
+        return 0.0
+    owned = set(kost_facility_ids) & set(all_facility_ids)
+    return sum(FACILITY_WEIGHTS.get(f, 3.0) for f in owned) / total * 100.0
 
-    user_max_weight = sum(FACILITY_WEIGHTS.get(fac_id, 3.0) for fac_id in user_facility_ids)
-    if user_max_weight == 0:
-        return 100.0
-
-    matched_ids = set(kost_facility_ids).intersection(set(user_facility_ids))
-    matched_weight = sum(FACILITY_WEIGHTS.get(fac_id, 3.0) for fac_id in matched_ids)
-
-    return (matched_weight / user_max_weight) * 100.0
-
-def calculate_topsis(kost, user_facilities, user_priorities, univ_id=None):
+def calculate_topsis(kost, user_priorities, univ_id=None):
     if not kost :
         return []
 
     kost_list = list(kost)
-    user_fac_ids = [int(f) for f in user_facilities if str(f).isdigit()]
-
+    all_facility_ids = list(Facility.objects.values_list('id', flat=True))
+    
     criteria_keys = ['harga', 'jarak', 'fasilitas']
     criteria_types = {
         'harga': -1,
@@ -53,20 +50,19 @@ def calculate_topsis(kost, user_facilities, user_priorities, univ_id=None):
     }
 
     # Normalisasi Bobot
-    total_priority = sum(user_priorities.get(k, 3) for k in criteria_keys)
-    if total_priority == 0:
-        weights = np.array([1 / 3, 1 / 3, 1 / 3])
-    else:
-        weights = np.array([
-            user_priorities.get(k, 3) / total_priority for k in criteria_keys
-        ])
+    raw = np.array([
+        CRITERIA_BASE_WEIGHTS.get(k, 3.0) * user_priorities.get(k, 3)
+        for k in criteria_keys
+    ])
+    
+    weights = raw / raw.sum()
 
     # Pembentukan Matriks Keputusan (X) ukuran N x 3
     matrix =[]
     for k in kost_list:
         dist_val = k.distance_to_campus_2 if str(univ_id) == '2' else k.distance_to_campus_1
         kost_fac_ids = list(k.kost_facilities.values_list('facility_id', flat=True))
-        fac_score = calculate_facility_score(kost_fac_ids, user_fac_ids)
+        fac_score = calculate_facility_score(kost_fac_ids, all_facility_ids)
         matrix.append([
             float(k.price),
             float(dist_val),

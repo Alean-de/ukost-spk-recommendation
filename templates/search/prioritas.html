@@ -34,7 +34,8 @@
 
         <!-- Form Card -->
         <div class="wizard-card">
-            <form id="step3Form" action="{% url 'rekomendasi' %}" method="GET">
+            <form id="step3Form" action="{% url 'prioritas' %}" method="post">
+                {% csrf_token %}
                 
                 <div class="criteria-list mb-4">
                     {% for crit in criteria %}

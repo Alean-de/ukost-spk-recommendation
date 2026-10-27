@@ -34,7 +34,8 @@
 
         <!-- Form Card -->
         <div class="wizard-card">
-            <form id="step1Form" action="{% url 'fasilitas' %}" method="GET">
+            <form id="step1Form" action="{% url 'cari_kost' %}" method="post">
+                {% csrf_token %}
                 
                 <!-- Campus Selection -->
                 <div class="form-group mb-4">
@@ -114,7 +115,7 @@
                         </label>
                         <span class="range-display-badge" id="distanceSlider_display">3.0 km</span>
                     </div>
-                    <input type="range" id="distanceSlider" name="max_distance" class="custom-range" min="500" max="8000" step="500" value="3.0" data-format="distance">
+                    <input type="range" id="distanceSlider" name="max_distance" class="custom-range" min="500" max="8000" step="500" value="3000" data-format="distance">
                     <div class="slider-scale-labels d-flex justify-content-between text-muted text-small mt-1">
                         <span>0.5 km<span class="slider-label-desc"> (Jalan Kaki)</span></span>
                         <span>3.0 km<span class="slider-label-desc"> (Sepeda Motor)</span></span>
