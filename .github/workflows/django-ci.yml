@@ -10,6 +10,10 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      security-events: write
+
     env:
       SECRET_KEY: 'secret-key-for-testing-only'
       DB_NAME: 'db'
@@ -36,6 +40,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'python'
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -53,7 +62,7 @@ jobs:
           path: "."
           level: "medium"
           confidence: "medium"
-          exit_zero: fals
+          exit_zero: false
 
       - name: Run Django System Checks
         run: python manage.py check
@@ -70,3 +79,6 @@ jobs:
           scan-type: 'fs'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
+      
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
