@@ -46,6 +46,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      
+      - name: Security Scan (Bandir - Python SAST)
+        run: bandit -r . -x ./test,./venv 
 
       - name: Run Django System Checks
         run: python manage.py check
@@ -55,3 +58,10 @@ jobs:
 
       - name: Run Tests
         run: python manage.py test
+      
+      - name: Dependency & Vulneralbility Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'

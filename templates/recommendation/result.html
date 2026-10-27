@@ -31,12 +31,10 @@
 
             <!-- Active Filter Badges -->
             <div class="pref-summary-tags mt-3">
-                <span class="pref-tag"><i class="fas fa-university mr-1"></i> Kampus: <span id="prefCampus">UKRIDA</span></span>
-                <span class="pref-tag"><i class="fas fa-money-bill-wave mr-1"></i> Budget: <span id="prefPrice">&le; Rp1.500.000</span></span>
-                <span class="pref-tag"><i class="fas fa-route mr-1"></i> Jarak: <span id="prefDistance">&le; 3.0 km</span></span>
-                <span class="pref-tag"><i class="fas fa-wifi mr-1"></i> Wi-Fi: <span>Ya</span></span>
-                <span class="pref-tag"><i class="fas fa-bath mr-1"></i> KM Dalam: <span>Ya</span></span>
-                <span class="pref-tag"><i class="fas fa-chart-pie mr-1"></i> Prioritas: <span id="prefWeight">Harga &amp; Jarak</span></span>
+                <span class="pref-tag"><i class="fas fa-university mr-1"></i> Kampus: <span id="prefCampus" data-id="{{ campus.id }}">{{ campus.name|default:"-" }}</span></span>
+                <span class="pref-tag"><i class="fas fa-money-bill-wave mr-1"></i> Budget: <span id="prefPrice">&le; Rp{{ prefs.max_price|floatformat:0 }}</span></span>
+                <span class="pref-tag"><i class="fas fa-route mr-1"></i> Jarak: <span id="prefDistance">{{ prefs.max_distance}} m</span></span>
+                <span class="pref-tag"><i class="fas fa-chart-pie mr-1"></i> Prioritas: <span id="prefWeight">{{ prefs.facilities }}</span></span>
             </div>
         </div>
     </div>

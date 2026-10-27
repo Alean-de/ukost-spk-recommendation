@@ -125,6 +125,7 @@ def rekomendasi_view(request):
         return redirect('cari_kost')
 
     campus_id = prefs.get('campus')
+    campus = University.objects.filter(id=campus_id).first()
     room_type = prefs.get('room_type', 'Semua')
     max_price = prefs.get('max_price')
     max_distance = prefs.get('max_distance')
@@ -148,6 +149,8 @@ def rekomendasi_view(request):
     )
 
     context = {
+        'campus': campus,
+        'prefs': prefs,
         'recommended': results[:5],
         'all_kost': results,
         'user': request.session.get('user', {}),
