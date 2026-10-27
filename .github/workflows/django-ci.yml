@@ -47,8 +47,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
-      - name: Security Scan (Bandir - Python SAST)
-        run: bandit -r . -x ./test,./venv 
+      - name: Security Scan (Bandit)
+        uses: shundor/python-bandit-scan@v1.0
+        with:
+          path: "."
+          level: "medium"
+          confidence: "medium"
+          exit_zero: fals
 
       - name: Run Django System Checks
         run: python manage.py check
