@@ -29,7 +29,7 @@ class RecommendationAPI(APIView):
         }
 
         queryset = apply_hard_filters(
-            campus_id=d['campus'],
+            campus_id=d['univ'],
             room_type=d['room_type'],
             max_price=d.get('max_price'),
             max_distance=d.get('max_distance'),
@@ -38,7 +38,7 @@ class RecommendationAPI(APIView):
         results = calculate_topsis(
             kost=queryset,
             user_priorities=priorities,
-            univ_id=d['campus'],
+            univ_id=d['univ'],
         )
 
         History.objects.create(
