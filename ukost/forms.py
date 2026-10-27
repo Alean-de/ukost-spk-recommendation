@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Faculty, University, UserDetail
+from .constants import PRIORITY_CRITERIA
 
 class StudentRegisterForm(UserCreationForm):
     full_name = forms.CharField(
@@ -175,9 +176,69 @@ class StudentLoginForm(forms.Form):
         return cleaned_data
 
 class PreferenceForm(forms.Form):
+    ROOM_TYPE_CHOICES = [
+        ('Semua', 'Semua'),
+        ('Putra', 'Kost Putra'),
+        ('Putri', 'Kost Putri'),
+        ('Campur', 'Kost Campur'),
+    ]
+
+    # Step 1: Kebutuhan Dasar
     university = forms.ModelChoiceField(
             queryset=University.objects.all(),
             required=True,
             empty_label='Pilih Kampus Utama Anda',
             widget=forms.Select(attrs={'class': 'form-control'})
         )
+    room_type = forms.ChoiceField(
+        choices=ROOM_TYPE_CHOICES,
+        required=False,
+        initial='Semua',
+        widget=forms.RadioSelect
+    )
+    max_price = forms.IntegerField(
+        required=True,
+        initial=2000000,
+        min_value=800000,
+        max_value=3500000,
+        widget=forms.NumberInput(attrs={
+            'type': 'range',
+            'id': 'priceSlider',
+            'class': 'custom-range',
+            'min': '800000',
+            'max': '3500000',
+            'step': '100000',
+        })
+    )
+    max_distance = forms.FloatField(
+        required=True,
+        initial=3.0,
+        min_value=0.5,
+        max_value=8.0,
+        widget=forms.NumberInput(attrs={
+            'type': 'range',
+            'id': 'distanceSlider',
+            'class': 'custom-range',
+            'min': '0.5',
+            'max': '8.0',
+            'step': '0.5',
+        })
+    )
+
+    # Step 2: Fasilitas
+    facilities = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    # Step 3: Pembobotan
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for criteria in PRIORITY_CRITERIA:
+            field_name = f"priority_{criteria['id']}"
+            self.fields[field_name] = forms.IntegerField(
+                min_value=1,
+                max_value=5,
+                initial=3,
+                required=False,
+            )

@@ -53,7 +53,7 @@
                         <option value="price_asc">Harga Terendah</option>
                         <option value="price_desc">Harga Tertinggi</option>
                         <option value="distance_asc">Jarak Terdekat</option>
-                        <option value="rating_desc">Rating Tertinggi</option>
+                        <!-- <option value="rating_desc">Rating Tertinggi</option> -->
                     </select>
                 </div>
             </div>
@@ -76,8 +76,8 @@
 
         <!-- Kost Grid Results -->
         <div class="kost-grid results-kost-grid" id="kostListContainer">
-            {% for k in all_kost %}
-            <div class="kost-card result-card" data-id="{{ k.id }}" data-room-type="{{ k.room_type }}" data-price="{{ k.price }}" data-distance="{{ k.distance }}" data-score="{{ k.score }}" data-rating="{{ k.rating }}">
+            {% for k in recommended %}
+            <div class="kost-card result-card" data-id="{{ k.id }}" data-room-type="{{ k.room_type }}" data-price="{{ k.price }}" data-distance="{{ k.distance }}" data-score="{{ k.score }}">
                 
                 <div class="kost-card-img-wrapper">
                     <div class="kost-card-img-placeholder">
@@ -101,25 +101,35 @@
                     <!-- Top Match Row -->
                     <div class="kost-card-score-row">
                         <div class="match-score">
-                            <span class="score-num">{{ k.score }}%</span>
+                            <!-- Kalikan skor preferensi TOPSIS (0-1) dengan 100 -->
+                            <span class="score-num">{% widthratio k.score 1 100 %}%</span>
                             <span class="score-text">Cocok</span>
                         </div>
-                        <div class="kost-rating">
+                        <!-- <div class="kost-rating">
                             <i class="fas fa-star text-accent"></i>
-                            <span>{{ k.rating }} / 5.0</span>
-                            <small class="text-muted">(Ulasan)</small>
-                        </div>
+                            <span>{{ k.kost.rating|default:"4.5" }} / 5.0</span>
+                        </div> -->
                     </div>
 
                     <!-- Title & Address -->
                     <h3 class="kost-card-title">
-                        <a href="{% url 'detail_kost' k.id %}">{{ k.name }}</a>
+                        <a href="{% url 'detail_kost' k.id %}">{{ k.kost.name }}</a>
                     </h3>
 
                     <p class="kost-card-location">
                         <i class="fas fa-map-marker-alt text-primary"></i>
-                        <span>{{ k.distance }} km ke kampus &bull; {{ k.address }}</span>
+                        <span>{{ k.distance}} km ke kampus &bull; {{ k.kost.address_details }}</span>
                     </p>
+
+                    <!-- Mini Baris Skor Kriteria Kuantitatif (Harga, Jarak, Fasilitas) -->
+                    <!-- <div class="score-breakdown-mini">
+                        <div class="mini-score-bar" title="Kelengkapan Fasilitas">
+                            <span class="mini-label">Skor Fasilitas ({{ k.facility_score }}%)</span>
+                            <div class="mini-bar-bg">
+                                <div class="mini-bar-val bg-warning" style="width: {{ k.facility_score }}%;"></div>
+                            </div>
+                        </div>
+                    </div> -->
 
                     {% if forloop.first %}
                     <!-- Ranking Reason Explanation for Top Card -->
@@ -187,6 +197,8 @@
                 </div>
 
             </div>
+            {% empty %}
+                <p class="text-muted">Tidak ada kost yang cocok dengan filter kamu.</p>
             {% endfor %}
         </div>
 
@@ -270,15 +282,21 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // Load search prefs in summary tags
-    const saved = Storage.getSearchPrefs();
+    let saved = {};
+    try {
+        saved = JSON.parse(localStorage.getItem('search_prefs') || '{}');
+    } catch (e) {
+        console.log("No saved search prefs found");
+    }
+
     if (saved.campus === '2') {
         document.getElementById('prefCampus').textContent = 'UKRIDA Kampus 2 Kedoya';
     }
     if (saved.max_price) {
-        document.getElementById('prefPrice').textContent = 'Rp' + saved.max_price.toLocaleString('id-ID');
+        document.getElementById('prefPrice').textContent = 'Rp' + parseInt(saved.max_price).toLocaleString('id-ID');
     }
     if (saved.max_distance) {
-        document.getElementById('prefDistance').textContent = saved.max_distance.toFixed(1) + ' km';
+        document.getElementById('prefDistance').textContent = parseFloat(saved.max_distance).toFixed(1) + ' km';
     }
 
     // Sort & Filter Handlers
@@ -304,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sortVal === 'price_asc') return parseInt(a.dataset.price) - parseInt(b.dataset.price);
             if (sortVal === 'price_desc') return parseInt(b.dataset.price) - parseInt(a.dataset.price);
             if (sortVal === 'distance_asc') return parseFloat(a.dataset.distance) - parseFloat(b.dataset.distance);
-            if (sortVal === 'rating_desc') return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
+            // if (sortVal === 'rating_desc') return parseFloat(b.dataset.rating) - parseFloat(a.dataset.rating);
             return 0;
         });
 
@@ -318,9 +336,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 rankBadge.className = 'badge-rank rank-' + (idx + 1 <= 3 ? idx + 1 : 'other');
             }
             container.appendChild(c);
-        });
+        }); 
 
-        document.getElementById('totalResultsCount').textContent = visibleCards.length + ' kost';
+        // Ganti baris ini di JS result.html:
+        const totalCountElem = document.getElementById('totalResultsCount');
+        if (totalCountElem) {
+            totalCountElem.textContent = visibleCards.length + ' kost';
+        }
     };
 
     sortSelect.addEventListener('change', renderList);

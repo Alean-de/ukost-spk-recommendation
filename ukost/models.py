@@ -115,7 +115,7 @@ class Favorite(models.Model):
 class History(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="search_histories")
     university = models.ForeignKey(University, on_delete=models.CASCADE, related_name="histories")
-    gender = models.ExpressionList("putra", "putri", "campur")
+    gender = models.CharField(max_length=10, choices=Kost.GenderType.choices, default=Kost.GenderType.CAMPUR)
     budget_limit = models.IntegerField()
     radius_limit = models.IntegerField()
     facility = models.JSONField()

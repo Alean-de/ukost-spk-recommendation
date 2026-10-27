@@ -9,13 +9,15 @@ from django.views.decorators.http import require_http_methods
 from .mock_data import (
     get_all_kost, get_kost_by_id, get_recommended_kost,
     get_kost_for_landing, CAMPUS_DATA, FAKULTAS_DATA,
-    FACILITIES_LIST, PRIORITY_CRITERIA, MOCK_HISTORY, MOCK_KOST_DATA
+    FACILITIES_LIST, MOCK_HISTORY, MOCK_KOST_DATA
 )
 from .forms import StudentRegisterForm, StudentLoginForm
+from .models import University, Facility
+from .services import apply_hard_filters, calculate_topsis
+from .constants import PRIORITY_CRITERIA
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
-
 
 def login_view(request):
     """Login page."""
@@ -68,63 +70,56 @@ def home_view(request):
 @login_required
 def cari_kost_view(request):
     """Search preferences - Step 1: Basic Needs."""
-    context = {
-        'campus_data': CAMPUS_DATA,
-        'step': 1,
-        'user': request.session.get('user', {}),
-    }
-    return render(request, 'search/preference.html', context)
+    campuses = University.objects.all()
+    return render(request, 'search/preference.html', {'campus_data': campuses, 'step': 1})
 
 @login_required
 def fasilitas_view(request):
     """Search preferences - Step 2: Facilities."""
-    context = {
-        'facilities': FACILITIES_LIST,
-        'step': 2,
-        'user': request.session.get('user', {}),
-    }
-    return render(request, 'search/fasilitas.html', context)
+    facilities = Facility.objects.all()
+    return render(request, 'search/fasilitas.html', {'facilities': facilities, 'step': 2})
 
 @login_required
 def prioritas_view(request):
     """Search preferences - Step 3: Priority."""
-    context = {
-        'criteria': PRIORITY_CRITERIA,
-        'step': 3,
-        'user': request.session.get('user', {}),
-    }
-    return render(request, 'search/prioritas.html', context)
+    return render(request, 'search/prioritas.html', {'criteria': PRIORITY_CRITERIA, 'step': 3})
 
 @login_required
 def rekomendasi_view(request):
     """Recommendation results page."""
-    recommended = get_recommended_kost(5)
-    all_kost = get_all_kost()
+    campus_id = request.GET.get('campus') or request.GET.get('university')
+    room_type = request.GET.get('room_type', 'Semua')
+    max_price = request.GET.get('max_price')
+    max_distance = request.GET.get('max_distance')
+    user_facilities = request.GET.getlist('facilities')
+
+    user_priorities = {}
+    for crit in PRIORITY_CRITERIA:
+        crit_id = crit['id']
+        user_priorities[crit_id] = int(request.GET.get(f'priority_{crit_id}', 3))
+
+    filtered_kosts = apply_hard_filters(
+        campus_id=campus_id,
+        room_type=room_type,
+        max_price=max_price,
+        max_distance=max_distance
+    )
+
+    print("Jumlah Kost Lolos Hard Filter:", filtered_kosts.count())
+
+    results = calculate_topsis(
+        kost=filtered_kosts,
+        user_facilities=user_facilities,
+        user_priorities=user_priorities,
+        univ_id=campus_id,
+    )
+
     context = {
-        'recommended': recommended,
-        'all_kost': all_kost,
-        'all_kost_json': json.dumps([{
-            'id': k['id'],
-            'name': k['name'],
-            'price': k['price'],
-            'price_display': k['price_display'],
-            'distance': k['distance'],
-            'rating': k['rating'],
-            'room_type': k['room_type'],
-            'facilities': k['facilities'],
-            'score': k['score'],
-            'scores': k['scores'],
-            'rank': k['rank'],
-            'address': k['address'],
-            'wifi': k['wifi'],
-            'bathroom': k['bathroom'],
-            'ac': k['ac'],
-            'security': k['security'],
-            'cctv': k['cctv'],
-            'availability': k['availability'],
-        } for k in all_kost]),
-        'user': request.session.get('user', {}),
+        'recommended': results[:5],
+        'all_kost': results,
+        'user': request.session.get('user', {})
     }
+    
     return render(request, 'recommendation/result.html', context)
 
 @login_required

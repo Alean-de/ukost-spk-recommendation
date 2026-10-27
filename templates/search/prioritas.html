@@ -56,14 +56,15 @@
                             <input type="range" class="criteria-range-slider custom-range" 
                                    id="crit_{{ crit.id }}" 
                                    name="priority_{{ crit.id }}" 
-                                   min="1" max="4" step="1" value="3" 
+                                   min="1" max="5" step="1" value="3"   
                                    data-crit-id="{{ crit.id }}">
                             
                             <div class="criteria-levels" id="levels_{{ crit.id }}">
-                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="1">1. Tidak Penting</button>
-                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="2">2. Cukup</button>
-                                <button type="button" class="level-btn active" data-crit-id="{{ crit.id }}" data-value="3">3. Penting</button>
-                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="4">4. Sangat Penting</button>
+                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="1">Sangat Tidak Penting</button>
+                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="2">Tidak Penting</button>
+                                <button type="button" class="level-btn active" data-crit-id="{{ crit.id }}" data-value="3">Cukup</button>
+                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="4">Penting</button>
+                                <button type="button" class="level-btn" data-crit-id="{{ crit.id }}" data-value="5">Sangat Penting</button>
                             </div>
                         </div>
                     </div>
@@ -116,10 +117,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const levelBtns = document.querySelectorAll('.level-btn');
 
     const levelText = {
-        1: 'Tidak Penting (1/4)',
-        2: 'Cukup (2/4)',
-        3: 'Penting (3/4)',
-        4: 'Sangat Penting (4/4)'
+        1: 'Sangat Tidak Penting (1/5)',
+        2: 'Tidak Penting (2/5)',
+        3: 'Cukup (3/5)',
+        4: 'Penting (4/5)',
+        5: 'Sangat Penting (5/5)'
     };
 
     const colors = {
