@@ -1,10 +1,10 @@
 import numpy as np
 from django.db.models import Q
 from .models import Kost, Facility
-from .constants import PRIORITY_CRITERIA, FACILITY_WEIGHTS, CRITERIA_BASE_WEIGHTS
+from .constants import PRIORITY_CRITERIA, CRITERIA_BASE_WEIGHTS
 
 
-def apply_hard_filters(campus_id, room_type=None, max_price=None, max_distance=None, mandatory_facilities=None):
+def apply_hard_filters(campus_id, room_type=None, min_price=None, max_distance=None, mandatory_facilities=None):
     """
     Melakukan query penyaringan awal di database.
     Mengembalikan QuerySet kost yang lolos kriteria mutlak.
@@ -14,8 +14,8 @@ def apply_hard_filters(campus_id, room_type=None, max_price=None, max_distance=N
     if room_type and room_type != 'Semua' and room_type != 'Campur/Bebas':
         filters &= Q(gender_type=room_type)
 
-    if max_price:
-        filters &= Q(price__lte=float(max_price))
+    if min_price:
+        filters &= Q(price__gte=float(min_price))
 
     if max_distance:
         if str(campus_id) == '2':
@@ -28,12 +28,12 @@ def apply_hard_filters(campus_id, room_type=None, max_price=None, max_distance=N
         queryset = queryset.filter(kost_facilities__facility_id=fac_id)
     return queryset.distinct()
 
-def calculate_facility_score(kost_facility_ids, all_facility_ids):
-    total = sum(FACILITY_WEIGHTS.get(f, 3.0) for f in all_facility_ids)
-    if total == 0:
-        return 0.0
-    owned = set(kost_facility_ids) & set(all_facility_ids)
-    return sum(FACILITY_WEIGHTS.get(f, 3.0) for f in owned) / total * 100.0
+# def calculate_facility_score(kost_facility_ids, all_facility_ids):
+#     total = sum(FACILITY_WEIGHTS.get(f, 3.0) for f in all_facility_ids)
+#     if total == 0:
+#         return 0.0
+#     owned = set(kost_facility_ids) & set(all_facility_ids)
+#     return sum(FACILITY_WEIGHTS.get(f, 3.0) for f in owned) / total * 100.0
 
 def calculate_topsis(kost, user_priorities, univ_id=None):
     if not kost :
@@ -42,18 +42,21 @@ def calculate_topsis(kost, user_priorities, univ_id=None):
     kost_list = list(kost)
     all_facility_ids = list(Facility.objects.values_list('id', flat=True))
     
-    criteria_keys = ['harga', 'jarak', 'fasilitas']
+    criteria_keys = ['harga', 'jarak', 'fasilitas', 'luas_kamar']
     criteria_types = {
         'harga': -1,
         'jarak': -1,
         'fasilitas': 1,
+        'luas_kamar': 1,
     }
 
     # Normalisasi Bobot
     raw = np.array([
-        CRITERIA_BASE_WEIGHTS.get(k, 3.0) * user_priorities.get(k, 3)
+        CRITERIA_BASE_WEIGHTS[k] * user_priorities.get(k, 3)
         for k in criteria_keys
     ])
+    if raw.sum() == 0:
+        raw = np.ones(len(criteria_keys))
     
     weights = raw / raw.sum()
 

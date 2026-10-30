@@ -196,16 +196,16 @@ class PreferenceForm(forms.Form):
         initial='Semua',
         widget=forms.RadioSelect
     )
-    max_price = forms.IntegerField(
+    min_price = forms.IntegerField(
         required=True,
         initial=2000000,
-        min_value=800000,
+        min_value=700000,
         max_value=3500000,
         widget=forms.NumberInput(attrs={
             'type': 'range',
             'id': 'priceSlider',
             'class': 'custom-range',
-            'min': '800000',
+            'min': '700000',
             'max': '3500000',
             'step': '100000',
         })

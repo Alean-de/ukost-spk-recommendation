@@ -73,7 +73,7 @@ def cari_kost_view(request):
         request.session['search_prefs'] = {
             'campus': request.POST.get('campus'),
             'room_type': request.POST.get('room_type', 'Semua'),
-            'max_price': request.POST.get('max_price'),
+            'min_price': request.POST.get('min_price'),
             'max_distance': request.POST.get('max_distance'),
         }
         return redirect('fasilitas')
@@ -110,7 +110,7 @@ def prioritas_view(request):
             user=request.user,
             university_id=prefs.get('campus'),
             gender=prefs.get('room_type', 'Semua'),
-            budget_limit=int(prefs.get('max_price') or 0),
+            budget_limit=int(prefs.get('min_price') or 0),
             radius_limit=int(float(prefs.get('max_distance') or 0)),
             facility=prefs.get('facilities', []),
             criteria_weight=priorities,
@@ -120,14 +120,16 @@ def prioritas_view(request):
 
 @login_required
 def rekomendasi_view(request):
+    print("MASUK rekomendasi_view")
     prefs = request.session.get('search_prefs')
+    print("PREFS:", prefs)
     if not prefs or 'priorities' not in prefs:
         return redirect('cari_kost')
 
     campus_id = prefs.get('campus')
     campus = University.objects.filter(id=campus_id).first()
     room_type = prefs.get('room_type', 'Semua')
-    max_price = prefs.get('max_price')
+    min_price = prefs.get('min_price')
     max_distance = prefs.get('max_distance')
     mandatory = [int(f) for f in prefs.get('facilities', []) if str(f).isdigit()]
     user_priorities = {
@@ -138,10 +140,14 @@ def rekomendasi_view(request):
     filtered_kosts = apply_hard_filters(
         campus_id=campus_id,
         room_type=room_type,
-        max_price=max_price,
+        min_price=min_price,
         max_distance=max_distance,
         mandatory_facilities=mandatory,
     )
+
+    print("LOLOS FILTER:", filtered_kosts.count(),
+        list(filtered_kosts.values_list('price', flat=True)[:5]))
+    
     results = calculate_topsis(
         kost=filtered_kosts,
         user_priorities=user_priorities,

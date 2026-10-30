@@ -31,7 +31,7 @@ class RecommendationAPI(APIView):
         queryset = apply_hard_filters(
             campus_id=d['univ'],
             room_type=d['room_type'],
-            max_price=d.get('max_price'),
+            min_price=d.get('min_price'),
             max_distance=d.get('max_distance'),
             mandatory_facilities=d['facilities'],
         )
@@ -45,7 +45,7 @@ class RecommendationAPI(APIView):
             user=request.user,
             university_id=d['univ'],
             gender=d['room_type'],
-            budget_limit=d['max_price'] or 0,
+            budget_limit=d['min_price'] or 0,
             radius_limit=d['max_distance'] or 0,
             facility=d['facilities'],
             criteria_weight=priorities,

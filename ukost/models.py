@@ -48,17 +48,27 @@ class Kost(models.Model):
         PUTRA = 'Putra'
         PUTRI = 'Putri'
 
+    class Electiricity(models.TextChoices):
+        PASCABAYAR = 'Pascabayar'
+        TOKEN = 'Token'
+
     id = models.CharField(max_length=20, primary_key=True)
     cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE, related_name='kost_list', null=True, blank=True)
     gender_type = models.CharField(
         max_length=10,
         choices=GenderType.choices,
-        default=GenderType.CAMPUR
+        default=GenderType.CAMPUR,
     )
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     address_details = models.CharField(max_length=355)
+    room_size = models.FloatField(null=True, blank=True, help_text='Luas Kamar (m2)')
     price = models.IntegerField()
+    electricity_type = models.CharField(
+        max_length=20,
+        choices=Electiricity.choices,
+        default=Electiricity.PASCABAYAR,
+    )
     distance_to_campus_1 = models.IntegerField()
     distance_to_campus_2 = models.IntegerField()
     waiting_list = models.BooleanField(default=False)
@@ -75,6 +85,23 @@ class Facility(models.Model):
 
     def __str__(self):
         return self.name
+
+class Policy(models.Model):
+    name = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name_plural = 'Policies'
+
+    def __str__(self):
+        return self.name
+
+class KostPolicy(models.Model):
+    kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name='kost_policies')
+    policy = models.ForeignKey(Policy, on_delete=models.CASCADE, related_name='policy_kosts')
+    value = models.CharField
+
+    def __str__(self):
+        return f'{self.kost.name} - {self.policy.name}'
 
 class KostPromotion(models.Model):
     kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name="promotions")

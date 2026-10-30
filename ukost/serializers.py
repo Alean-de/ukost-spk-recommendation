@@ -29,7 +29,7 @@ class RecommendationInputSerializer(serializers.Serializer):
     room_type = serializers.ChoiceField(
         choices=['Semua', 'Putra', 'Putri', 'Campur'], default='Semua'
     )
-    max_price = serializers.IntegerField(required=False, min_value=0)
+    min_price = serializers.IntegerField(required=False, min_value=0)
     max_distance = serializers.IntegerField(required=False, min_value=0)
     facilities = serializers.ListField(
         child=serializers.IntegerField(), required=False, default=list

@@ -91,15 +91,16 @@
                     </div>
                 </div>
 
-                <!-- Maximum Budget Slider -->
+                <!-- Minimum Budget Slider -->
                 <div class="form-group mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
                         <label for="priceSlider" class="form-label font-weight-bold mb-0">
-                            <i class="fas fa-money-bill-wave text-primary mr-1"></i> Batas Anggaran Bulanan Maksimal
+                            <i class="fas fa-money-bill-wave text-primary mr-1"></i> Batas Harga Minimal Kost
                         </label>
                         <span class="range-display-badge" id="priceSlider_display">Rp2.000.000</span>
                     </div>
-                    <input type="range" id="priceSlider" name="max_price" class="custom-range" min="800000" max="8000000" step="100000" value="2000000" data-format="currency">
+                    <input type="range" id="priceSlider" name="min_price" class="custom-range" min="700000" max="8000000" step="100000" value="2000000" data-format="currency">
+                    <small class="form-text text-muted">Kost dengan harga di bawah angka ini tidak akan ditampilkan.</small>
                 </div>
 
                 <!-- Maximum Distance Slider -->
@@ -146,9 +147,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const radio = document.querySelector(`input[name="room_type"][value="${saved.room_type}"]`);
         if (radio) radio.checked = true;
     }
-    if (saved.max_price) {
+    if (saved.min_price) {
         const slider = document.getElementById('priceSlider');
-        slider.value = saved.max_price;
+        slider.value = saved.min_price;
         slider.dispatchEvent(new Event('input'));
     }
     if (saved.max_distance) {
@@ -165,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Storage.saveSearchPrefs({
             campus: form.campus.value,
             room_type: selectedRadio ? selectedRadio.value : 'Semua',
-            max_price: parseInt(form.max_price.value),
+            min_price: parseInt(form.min_price.value),
             max_distance: parseFloat(form.max_distance.value)
         });
     });

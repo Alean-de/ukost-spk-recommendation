@@ -32,7 +32,7 @@
             <!-- Active Filter Badges -->
             <div class="pref-summary-tags mt-3">
                 <span class="pref-tag"><i class="fas fa-university mr-1"></i> Kampus: <span id="prefCampus" data-id="{{ campus.id }}">{{ campus.name|default:"-" }}</span></span>
-                <span class="pref-tag"><i class="fas fa-money-bill-wave mr-1"></i> Budget: <span id="prefPrice">&le; Rp{{ prefs.max_price|floatformat:0 }}</span></span>
+                <span class="pref-tag"><i class="fas fa-money-bill-wave mr-1"></i> Harga Mulai: <span id="prefPrice">&le; Rp{{ prefs.min_price|floatformat:0 }}</span></span>
                 <span class="pref-tag"><i class="fas fa-route mr-1"></i> Jarak: <span id="prefDistance">{{ prefs.max_distance}} m</span></span>
                 <span class="pref-tag"><i class="fas fa-chart-pie mr-1"></i> Prioritas: <span id="prefWeight">{{ prefs.facilities }}</span></span>
             </div>
@@ -136,8 +136,8 @@
                             <i class="fas fa-lightbulb text-accent mr-1"></i> Kenapa kost ini mendapatkan ranking #1?
                         </div>
                         <ul class="text-small text-muted mb-0 pl-3">
-                            <li>Harga sesuai budget mahasiswa ({{ k.price_display }})</li>
-                            <li>Jarak sangat dekat ke kampus ({{ k.distance }} km)</li>
+                            <li>Harga ({{ k.price_display }}), paling sesuai dengan batas harga yang kamu pilih.</li>
+                            <li>Jarak sangat dekat ke kampus ({{ k.distance }} m)</li>
                             <li>Wi-Fi cepat {{ k.wifi_speed|default:"tersedia" }}</li>
                             <li>Kamar mandi dalam &amp; AC aktif</li>
                         </ul>
@@ -285,8 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved.campus === '2') {
         document.getElementById('prefCampus').textContent = 'UKRIDA Kampus 2 Kedoya';
     }
-    if (saved.max_price) {
-        document.getElementById('prefPrice').textContent = 'Rp' + parseInt(saved.max_price).toLocaleString('id-ID');
+    if (saved.min_price) {
+        document.getElementById('prefPrice').textContent = 'Rp' + parseInt(saved.min_price).toLocaleString('id-ID');
     }
     if (saved.max_distance) {
         document.getElementById('prefDistance').textContent = parseFloat(saved.max_distance).toFixed(1) + ' m';

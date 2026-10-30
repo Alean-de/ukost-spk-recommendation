@@ -48,9 +48,9 @@ class HardFilterTests(BaseTestCase):
         qs = apply_hard_filters(campus_id=self.univ.id, room_type='Semua')
         self.assertEqual(qs.count(), 2)
 
-    def test_filter_harga(self):
-        qs = apply_hard_filters(campus_id=self.univ.id, max_price=1500000)
-        self.assertEqual([k.id for k in qs], ['K001'])
+    def test_filter_harga_minimal(self):
+        qs = apply_hard_filters(campus_id=self.univ.id, min_price=1500000)
+        self.assertEqual([k.id for k in qs], ['K002'])
 
     def test_filter_jarak_kampus_1(self):
         qs = apply_hard_filters(campus_id=1, max_distance=1000)
@@ -130,7 +130,7 @@ class WizardSessionTests(BaseTestCase):
     def test_alur_wizard_lengkap(self):
         r1 = self.client.post(reverse('cari_kost'), {
             'campus': self.univ.id, 'room_type': 'Putri',
-            'max_price': 1500000, 'max_distance': 1000,
+            'min_price': 1500000, 'max_distance': 1000,
         })
         self.assertRedirects(r1, reverse('fasilitas'))
 
@@ -187,7 +187,7 @@ class ApiTests(BaseTestCase):
             reverse('api_rekomendasi'),
             {
                 'univ': self.univ.id, 'room_type': 'Putri',
-                'max_price': 1500000, 'max_distance': 1000,
+                'min_price': 1500000, 'max_distance': 1000,
                 'facilities': [self.wifi.id],
                 'priorities': {'harga': 5, 'jarak': 3, 'fasilitas': 2},
             },

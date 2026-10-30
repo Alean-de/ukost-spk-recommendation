@@ -137,7 +137,7 @@ const Storage = {
                 campus: '1',
                 faculty: '',
                 room_type: 'Semua',
-                max_price: 2000000,
+                min_price: 2000000,
                 max_distance: 3.0,
                 facilities: ['wifi', 'bathroom', 'ac'],
                 priorities: {

@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: dateStr,
                 time: timeStr,
                 campus: fullPrefs.campus === '2' ? 'UKRIDA Kampus 2' : 'UKRIDA Kampus 1',
-                budget: 'Rp' + (fullPrefs.max_price || 2000000).toLocaleString('id-ID'),
+                budget: 'Rp' + (fullPrefs.min_price || 2000000).toLocaleString('id-ID'),
                 distance: (fullPrefs.max_distance || 3.0).toFixed(1) + ' km',
                 priority: 'Kustom (' + Object.keys(priorities).length + ' Kriteria)',
                 result_count: 5,
