@@ -22,6 +22,89 @@ Seluruh fitur ini masih berada dalam tahap pengembangan.
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
+## Formulas
+Untuk menghasilkan rekomendasi kost yang akurat dan sesuai dengan preferensi pengguna, sistem memerlukan kerangka komputasi yang terstruktur. Proses pengambilan keputusan multi-kriteria ini diselesaikan melalui beberapa tahapan perhitungan matematis. Berikut adalah rincian rumus dan tahapan sistematis yang digunakan dalam perancangan model:
+    
+1. Pembobotan Survei
+    
+    a. Rata-rata skor kriteria j
+       $$s_j = \frac{\sum_{k=1}^{n} x_{kj}}{n}$$
+    dengan $x_{kj}$ adalah skor yang diberikan responden ke-$k$ pada kriteria ke-$j$.
+
+    b. Pemecahan bobot jarak berdasarkan proporsi responden
+
+    Kriteria jarak dipecah menjadi dua kolom (C8 = jarak ke Kampus 1, C9 = jarak ke Kampus 2). Agar jarak tidak terhitung dua kali, skor tiap kampus dikalikan proporsi respondennya.
+
+    $$p_{K1} = \frac{n_{K1}}{n}, \qquad p_{K2} = \frac{n_{K2}}{n}$$
+
+    $$s'_{C8} = s_{C8} \times p_{K1}, \qquad s'_{C9} = s_{C9} \times p_{K2}$$
+
+    Untuk kriteria C1 sampai C7 berlaku $s'_j = s_j$.
+
+    c. Normalisasi bobot
+
+    $$w_j = \frac{s'_j}{\sum_{j=1}^{n} s'_j}, \qquad \sum_{j=1}^{n} w_j = 1$$
+
+    Keterangan:
+    - $s_j$ : rata-rata skor kepentingan kriteria ke-$j$
+    - $n$ : jumlah responden
+    - $n_{K1}, n_{K2}$ : jumlah responden Kampus 1 dan Kampus 2
+    - $p_{K1}, p_{K2}$ : proporsi responden tiap kampus
+    - $s'_j$ : skor yang sudah disesuaikan
+    - $w_j$ : bobot akhir kriteria ke-$j$
+
+2. Matriks Keputusan
+
+    Matriks keputusan $X$ berukuran $m \times n$, dengan $m$ adalah jumlah alternatif kost dan $n$ jumlah kriteria.
+
+    $$X = \begin{bmatrix} x_{11} & x_{12} & \cdots & x_{1n} \\ x_{21} & x_{22} & \cdots & x_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ x_{m1} & x_{m2} & \cdots & x_{mn} \end{bmatrix}$$
+
+    Keterangan:
+    - $x_{ij}$ : nilai alternatif ke-$i$ pada kriteria ke-$j$
+    - Fasilitas (C1–C6) dikonversi menjadi biner: tersedia (TRUE) = 1, tidak tersedia (FALSE) = 0
+    - Harga (C7) dalam rupiah, jarak (C8 dan C9) dalam meter
+    - Benefit (C1–C6): semakin besar semakin baik
+    - Cost (C7–C9): semakin kecil semakin baik
+
+3. Normalisasi Matriks
+
+    Setiap nilai dinormalisasi dengan metode vektor agar semua kriteria berada pada skala yang sebanding.
+
+    $$r_{ij} = \frac{x_{ij}}{\sqrt{\sum_{i=1}^{m} x_{ij}^2}}$$
+
+4. Matriks Ternormalisasi Terbobot
+
+    $$y_{ij} = w_j \times r_{ij}$$
+
+5. Solusi Ideal Positif ($A^+$) dan Negatif ($A^-$)
+
+    Untuk kriteria benefit:
+    $$A^+_j = \max_i(y_{ij}), \qquad A^-_j = \min_i(y_{ij})$$
+
+    Untuk kriteria cost:
+    $$A^+_j = \min_i(y_{ij}), \qquad A^-_j = \max_i(y_{ij})$$
+
+6. Jarak ke Solusi Ideal
+
+    $$D_i^+ = \sqrt{\sum_{j=1}^{n} \left(y_{ij} - A_j^+\right)^2}$$
+
+    $$D_i^- = \sqrt{\sum_{j=1}^{n} \left(y_{ij} - A_j^-\right)^2}$$
+
+7. Nilai Preferensi dan Ranking
+
+    $$V_i = \frac{D_i^-}{D_i^+ + D_i^-}, \qquad 0 \le V_i \le 1$$
+
+    Alternatif dengan nilai $V_i$ terbesar berada di peringkat pertama dan menjadi rekomendasi utama.
+
+## Alasan Pemilihan Metode TOPSIS
+
+TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution) dipilih karena:
+- Mampu menangani banyak kriteria sekaligus, baik benefit maupun cost, sesuai kasus pemilihan kost (fasilitas, harga, jarak).
+- Bobot kriteria dapat diambil langsung dari data survei, sehingga hasil mencerminkan preferensi pengguna.
+- Konsepnya jelas: alternatif terbaik adalah yang paling dekat dengan kondisi ideal dan paling jauh dari kondisi terburuk.
+- Menghasilkan nilai preferensi numerik sehingga ranking mudah diinterpretasikan.
+- Perhitungannya dapat direplikasi sepenuhnya dengan formula spreadsheet.
+
 ## Instalation & Setup
 1. **Clone repository ini ke lokal**
     ```text
