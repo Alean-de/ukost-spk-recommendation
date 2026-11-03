@@ -19,10 +19,21 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.trycloudflare.com',
+    ]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.trycloudflare.com',
+]
 
 # Application definition
 INSTALLED_APPS = [
+    'unfold',
+    'unfold.contrib.filters',
+    'unfold.contrib.forms',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -61,6 +72,31 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+# Unfold
+UNFOLD = {
+    "SITE_TITLE": "UKOST ADMIN",
+    "SITE_HEADER": "UKOST MANAGEMENT",
+    "SITE_SUBTITLE": "Dashboard Panel Admin UKOST",
+    "SHOW_HISTORY": True,
+    "BORDER_RADIUS": "6px",
+    "DASHBOARD_CALLBACK": "ukost.dashboard.dashboard_callback",
+    "COLORS": {
+        "primary": {
+            "50": "238 243 255",
+            "100": "224 233 254",
+            "200": "196 213 253",
+            "300": "153 182 251",
+            "400": "100 142 247",
+            "500": "26 67 160",     
+            "600": "20 52 128",     
+            "700": "17 42 104",     
+            "800": "15 35 84",
+            "900": "14 30 69",
+            "950": "10 20 48",
+        },
+    }
+}
 
 # Database
 DATABASES = {

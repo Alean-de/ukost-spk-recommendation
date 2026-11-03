@@ -37,7 +37,8 @@ class UserDetail(models.Model):
     nim = models.CharField(max_length=20, unique=True)
 
     def __str__(self):
-        return f"{self.user.username} ({self.nim})"
+       nama = self.user.get_full_name() or self.user.username
+       return f"{self.nim} - {nama}"
 
 class Cluster(models.Model):
     cluster = models.CharField(max_length=255)
@@ -75,7 +76,7 @@ class Kost(models.Model):
     no_deposit_required = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.name} - {self.cluster_id}"
+        return f"{self.name}"
 
 class Facility(models.Model):
     name = models.CharField(max_length=255)
@@ -98,7 +99,11 @@ class Policy(models.Model):
 class KostPolicy(models.Model):
     kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name='kost_policies')
     policy = models.ForeignKey(Policy, on_delete=models.CASCADE, related_name='policy_kosts')
-    value = models.CharField
+    value = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('kost', 'policy')
+        verbose_name_plural = 'Kost Policies'
 
     def __str__(self):
         return f'{self.kost.name} - {self.policy.name}'
@@ -112,6 +117,9 @@ class KostPromotion(models.Model):
     has_long_term_promo = models.BooleanField(default=False)
     long_term_promo_detail = models.CharField(max_length=255, blank=True, null=True)
     long_term_savings_amount = models.IntegerField(default=0, help_text='Jumlah penghematan sewa jangka panjang')
+
+    class Meta:
+        verbose_name_plural = 'Kost Promotions'
 
     def __str__(self):
         return f'{self.kost.name} - {self.discount_name}'
