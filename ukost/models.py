@@ -35,9 +35,21 @@ class UserDetail(models.Model):
     study_program = models.ForeignKey(StudyProgram, on_delete=models.CASCADE, related_name="from_the_study_program", blank=True, null=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     nim = models.CharField(max_length=20, unique=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Nomor WhatsApp/HP")
+    bio = models.TextField(max_length=500, blank=True, null=True, verbose_name="Bio / Deskripsi Singkat")
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, verbose_name="Foto Profil")
 
     def __str__(self):
         return f"{self.user.username} ({self.nim})"
+
+    @property
+    def avatar_url(self):
+        if self.avatar and hasattr(self.avatar, 'url'):
+            try:
+                return self.avatar.url
+            except Exception:
+                return None
+        return None
 
 class Cluster(models.Model):
     cluster = models.CharField(max_length=255)
@@ -71,10 +83,33 @@ class Facility(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
-            verbose_name_plural = 'Facilities'
+        verbose_name_plural = 'Facilities'
 
     def __str__(self):
         return self.name
+
+    @property
+    def icon(self):
+        icon_map = {
+            'wifi': 'fas fa-wifi',
+            'kamar mandi': 'fas fa-bath',
+            'ac': 'fas fa-snowflake',
+            'parkir': 'fas fa-car',
+            'security': 'fas fa-shield-alt',
+            'cctv': 'fas fa-video',
+            'dapur': 'fas fa-utensils',
+            'laundry': 'fas fa-tshirt',
+            'listrik': 'fas fa-bolt',
+            'akses 24': 'fas fa-clock',
+            'furnitur': 'fas fa-couch',
+            'kasur': 'fas fa-bed',
+            'jendela': 'fas fa-window-maximize',
+        }
+        name_lower = self.name.lower()
+        for key, val in icon_map.items():
+            if key in name_lower:
+                return val
+        return 'fas fa-check-circle'
 
 class KostPromotion(models.Model):
     kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name="promotions")

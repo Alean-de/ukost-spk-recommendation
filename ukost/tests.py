@@ -212,3 +212,151 @@ class ApiTests(BaseTestCase):
         anon = Client()
         r = anon.get(reverse('api_kost_list'))
         self.assertIn(r.status_code, (401, 403))
+
+
+from django.core.files.uploadedfile import SimpleUploadedFile
+from ukost.models import UserDetail, Faculty, StudyProgram
+
+class ProfileManagementTests(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+        self.faculty = Faculty.objects.create(name='Fakultas Teknik')
+        self.prodi = StudyProgram.objects.create(faculty=self.faculty, name='Informatika')
+        self.detail = UserDetail.objects.create(
+            user=self.user,
+            nim='412021001',
+            university=self.univ,
+            faculty=self.faculty,
+            study_program=self.prodi,
+        )
+
+    def test_profile_page_tabs_rendering(self):
+        for tab in ['biodata', 'edit', 'security', 'favorit', 'riwayat']:
+            response = self.client.get(f'/profil/?tab={tab}')
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'profile/index.html')
+
+    def test_update_profile_success(self):
+        response = self.client.post('/profil/?tab=edit', {
+            'action': 'update_profile',
+            'full_name': 'Jonathan Agustinus',
+            'username': 'jonathan_agus',
+            'email': 'jonathan@civitas.ukrida.ac.id',
+            'phone_number': '081234567890',
+            'bio': 'Mahasiswa Informatika UKRIDA angkatan 2021.',
+            'university': self.univ.id,
+            'faculty': self.faculty.id,
+            'study_program': self.prodi.id,
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.detail.refresh_from_db()
+
+        self.assertEqual(self.user.first_name, 'Jonathan')
+        self.assertEqual(self.user.last_name, 'Agustinus')
+        self.assertEqual(self.user.username, 'jonathan_agus')
+        self.assertEqual(self.user.email, 'jonathan@civitas.ukrida.ac.id')
+        self.assertEqual(self.detail.phone_number, '081234567890')
+        self.assertEqual(self.detail.bio, 'Mahasiswa Informatika UKRIDA angkatan 2021.')
+
+    def test_update_profile_duplicate_username_fails(self):
+        User.objects.create_user(username='other_user', password='password123')
+        response = self.client.post('/profil/?tab=edit', {
+            'action': 'update_profile',
+            'full_name': 'Jonathan',
+            'username': 'other_user',
+            'email': 'valid@civitas.ukrida.ac.id',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertNotEqual(self.user.username, 'other_user')
+
+    def test_update_profile_invalid_email_fails(self):
+        response = self.client.post('/profil/?tab=edit', {
+            'action': 'update_profile',
+            'full_name': 'Jonathan',
+            'username': 'tester',
+            'email': 'invalid-email-format',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertNotEqual(self.user.email, 'invalid-email-format')
+
+    def test_change_password_success(self):
+        response = self.client.post('/profil/?tab=security', {
+            'action': 'change_password',
+            'old_password': 'pass12345',
+            'new_password': 'NewPassword2026!',
+            'confirm_password': 'NewPassword2026!',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('NewPassword2026!'))
+
+    def test_change_password_wrong_current_password(self):
+        response = self.client.post('/profil/?tab=security', {
+            'action': 'change_password',
+            'old_password': 'WrongPassword!',
+            'new_password': 'NewPassword2026!',
+            'confirm_password': 'NewPassword2026!',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('pass12345'))
+
+    def test_change_password_too_short(self):
+        response = self.client.post('/profil/?tab=security', {
+            'action': 'change_password',
+            'old_password': 'pass12345',
+            'new_password': 'short1',
+            'confirm_password': 'short1',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('pass12345'))
+
+    def test_change_password_mismatch(self):
+        response = self.client.post('/profil/?tab=security', {
+            'action': 'change_password',
+            'old_password': 'pass12345',
+            'new_password': 'NewPassword2026!',
+            'confirm_password': 'DifferentPassword2026!',
+        }, follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.user.refresh_from_db()
+        self.assertTrue(self.user.check_password('pass12345'))
+
+    def test_avatar_upload_and_delete(self):
+        # 1x1 GIF dummy image
+        tiny_gif = (
+            b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00'
+            b'\xff\xff\xff\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00'
+            b'\x01\x00\x01\x00\x00\x02\x02\x44\x01\x00\x3b'
+        )
+        avatar = SimpleUploadedFile('my_avatar.gif', tiny_gif, content_type='image/gif')
+
+        # Upload avatar
+        upload_resp = self.client.post('/profil/?tab=edit', {
+            'action': 'update_avatar',
+            'avatar': avatar,
+        }, follow=True)
+        self.assertEqual(upload_resp.status_code, 200)
+
+        self.detail.refresh_from_db()
+        self.assertTrue(bool(self.detail.avatar))
+
+        # Delete avatar
+        delete_resp = self.client.post('/profil/?tab=edit', {
+            'action': 'delete_avatar',
+        }, follow=True)
+        self.assertEqual(delete_resp.status_code, 200)
+
+        self.detail.refresh_from_db()
+        self.assertFalse(bool(self.detail.avatar))

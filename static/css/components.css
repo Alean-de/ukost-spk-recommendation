@@ -2991,3 +2991,148 @@
     from { transform: scale(0.96); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
+
+/* ---------- Grid & Layout System Helpers ---------- */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -8px;
+    margin-right: -8px;
+}
+
+.form-row > [class*="col-"],
+.form-row > .form-group {
+    padding-left: 8px;
+    padding-right: 8px;
+    flex: 0 0 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+    .form-row > .col-md-6 {
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+    }
+}
+
+.hero-container {
+    display: grid;
+    grid-template-columns: 1.25fr 0.85fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.hero-visual {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.hero-card-preview {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-xl);
+    width: 100%;
+    max-width: 380px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: var(--gray-800);
+}
+
+.preview-badge-top {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-600);
+    margin-bottom: 0.75rem;
+}
+
+.preview-image-placeholder {
+    height: 140px;
+    background: var(--gray-100);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.preview-tag-type {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.65);
+    color: white;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+}
+
+.preview-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.preview-location {
+    font-size: 0.82rem;
+    margin-bottom: 0.75rem;
+}
+
+.preview-facilities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1rem;
+}
+
+.preview-facilities span {
+    font-size: 0.72rem;
+    background: var(--gray-100);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    color: var(--gray-700);
+}
+
+.preview-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 0.75rem;
+}
+
+.preview-price .price-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--primary-600);
+}
+
+.preview-price .price-unit {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.kost-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.75rem;
+    width: 100%;
+}
+
+.spk-benefit-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.spk-benefit-card {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--gray-200);
+}

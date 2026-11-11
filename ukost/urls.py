@@ -21,6 +21,7 @@ urlpatterns = [
     path('bandingkan/', views.bandingkan_view, name='bandingkan'),
     path('favorit/', views.favorit_view, name='favorit'),
     path('riwayat/', views.riwayat_view, name='riwayat'),
+    path('profil/', views.profile_view, name='profil'),
 
     # API endpoints
     path('api/kost/', api_views.KostListAPI.as_view(), name='api_kost_list'),
