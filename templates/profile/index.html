@@ -1,0 +1,1962 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profil Mahasiswa{% endblock %}
+{% block nav_profil %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ==========================================================
+   UKOST PROFILE DASHBOARD - ULTRA-POLISHED MODERN DESIGN
+   ========================================================== */
+
+/* Main Container */
+.profile-wrapper {
+    background-color: #f1f5f9;
+    min-height: calc(100vh - 72px);
+    padding-bottom: 4rem;
+}
+
+/* 1. Hero Banner */
+.profile-hero-card {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #2563eb 100%);
+    color: #ffffff;
+    padding: 3rem 0 4.5rem 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+}
+
+.profile-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(245, 166, 35, 0.22) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.profile-hero-inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.profile-hero-identity {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-hero-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.25rem;
+    font-weight: 800;
+    border: 4px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.profile-hero-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.profile-hero-text h1 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 0.4rem 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.profile-hero-tags {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.profile-tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.3rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.825rem;
+    font-weight: 600;
+}
+
+.pill-nim {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+.pill-status {
+    background: rgba(16, 185, 129, 0.22);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.45);
+}
+
+.pill-campus {
+    background: rgba(245, 158, 11, 0.22);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.45);
+}
+
+.profile-hero-cta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* 2. Main Dashboard Grid */
+.profile-dashboard-layout {
+    display: grid;
+    grid-template-columns: 290px 1fr;
+    gap: 1.75rem;
+    margin-top: -2.5rem;
+    position: relative;
+    z-index: 3;
+}
+
+/* 3. Sidebar */
+.profile-sidebar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.profile-card-box {
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.sidebar-user-card {
+    padding: 1.75rem 1.25rem;
+    text-align: center;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.sidebar-user-avatar {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    margin: 0 auto 0.85rem auto;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a2f6d, #2563eb);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+    font-weight: 800;
+    border: 3.5px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.sidebar-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.sidebar-name {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.sidebar-meta {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.sidebar-menu-nav {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.sidebar-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    color: #475569;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.925rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav-link i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.05rem;
+    color: #94a3b8;
+    margin-right: 0.75rem;
+    transition: color 0.2s ease;
+}
+
+.sidebar-nav-link:hover {
+    background-color: #f1f5f9;
+    color: #1e3a8a;
+}
+
+.sidebar-nav-link:hover i {
+    color: #2563eb;
+}
+
+.sidebar-nav-link.active {
+    background-color: #eff6ff;
+    color: #1d4ed8;
+    font-weight: 700;
+    box-shadow: inset 3px 0 0 #2563eb;
+}
+
+.sidebar-nav-link.active i {
+    color: #2563eb;
+}
+
+.sidebar-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.sidebar-nav-link.active .sidebar-badge {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.sidebar-logout-link {
+    color: #ef4444 !important;
+    background: #fff5f5 !important;
+    border: 1px solid #fee2e2 !important;
+    margin-top: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar-logout-link i {
+    color: #ef4444 !important;
+}
+
+.sidebar-logout-link:hover {
+    background: #fee2e2 !important;
+    color: #b91c1c !important;
+    border-color: #fca5a5 !important;
+    transform: translateY(-1px);
+}
+
+.badge-logout {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+/* 4. Content Area */
+.profile-main-content {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    padding: 2.25rem;
+}
+
+.content-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.content-header-row h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.content-header-row p {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* 5. Avatar Management Box */
+.avatar-box-interactive {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    padding: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.avatar-preview-holder {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar-preview-display {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    border: 4px solid #ffffff;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+}
+
+.avatar-preview-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatar-status-pill {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e3a8a;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.2rem 0.65rem;
+    border-radius: 9999px;
+    white-space: nowrap;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.avatar-meta-info {
+    flex: 1;
+    min-width: 250px;
+}
+
+.avatar-meta-info h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.35rem 0;
+}
+
+.avatar-meta-info p {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0 0 1rem 0;
+    line-height: 1.45;
+}
+
+.avatar-btn-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* 6. Form Inputs & Groups */
+.form-group-modern {
+    margin-bottom: 1.35rem;
+}
+
+.form-label-modern {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 0.45rem;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.input-with-icon .input-icon-left {
+    position: absolute;
+    left: 14px;
+    color: #94a3b8;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 2;
+    transition: color 0.2s ease;
+}
+
+.form-control-modern {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    outline: none;
+    line-height: 1.4;
+}
+
+.form-control-modern:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+    background: #ffffff;
+}
+
+.form-control-modern:focus + .input-icon-left,
+.input-with-icon:focus-within .input-icon-left {
+    color: #2563eb;
+}
+
+.form-control-modern:disabled,
+.form-control-modern[readonly] {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+select.form-control-modern {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 14px 10px;
+    padding-right: 2.5rem;
+}
+
+textarea.form-control-modern {
+    padding-left: 16px;
+}
+
+.form-grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .form-grid-2col {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 7. Password Toggle & Strength Meter */
+.toggle-eye-btn {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 6px 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    border-radius: 6px;
+    transition: color 0.2s ease;
+    z-index: 2;
+}
+
+.toggle-eye-btn:hover {
+    color: #334155;
+}
+
+.pwd-meter-box {
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.pwd-meter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.825rem;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.pwd-meter-track {
+    height: 6px;
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.pwd-meter-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 9999px;
+}
+
+.pwd-checklist {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.775rem;
+    color: #64748b;
+}
+
+.pwd-check-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.pwd-check-item i {
+    font-size: 0.75rem;
+    width: 14px;
+    text-align: center;
+}
+
+.pwd-check-item.valid {
+    color: #059669;
+    font-weight: 600;
+}
+
+.pwd-check-item.valid i {
+    color: #10b981;
+}
+
+/* 8. Details Grid */
+.biodata-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.biodata-item-full {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .biodata-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 0.85rem !important;
+    }
+
+    .biodata-item-full {
+        grid-column: span 1 !important;
+    }
+}
+
+.biodata-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.biodata-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.biodata-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+/* 9. Buttons & Micro-interactions */
+.btn-primary-modern {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.35);
+    color: #ffffff;
+}
+
+.btn-secondary-modern {
+    background: #ffffff;
+    color: #334155;
+    border: 1.5px solid #cbd5e1;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.btn-secondary-modern:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+.btn-danger-modern {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1.5px solid #fecaca;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+.btn-danger-modern:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+}
+
+/* Loading State for Buttons */
+.btn-is-saving {
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.btn-is-saving .btn-text-normal {
+    display: none;
+}
+
+.btn-is-saving .btn-text-saving {
+    display: inline-flex !important;
+}
+
+.btn-text-saving {
+    display: none;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Responsiveness */
+@media (max-width: 991px) {
+    .profile-dashboard-layout {
+        grid-template-columns: minmax(0, 1fr) !important;
+        margin-top: 1.25rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .sidebar-user-card {
+        display: none !important;
+    }
+
+    .profile-sidebar-wrapper {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .profile-card-box {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .sidebar-menu-nav {
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+
+    .sidebar-nav-link {
+        white-space: nowrap !important;
+        padding: 0.7rem 1.1rem !important;
+        flex-shrink: 0 !important;
+        border-radius: 10px !important;
+    }
+
+    .sidebar-nav-link.active {
+        box-shadow: none !important;
+        background-color: #2563eb !important;
+        color: #ffffff !important;
+    }
+
+    .sidebar-nav-link.active i {
+        color: #ffffff !important;
+    }
+
+    .sidebar-nav-link.active .sidebar-badge {
+        background: #ffffff !important;
+        color: #2563eb !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-wrapper {
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        box-sizing: border-box !important;
+    }
+
+    .profile-hero-card {
+        padding: 1.75rem 0 2rem 0 !important;
+    }
+
+    .profile-hero-inner {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 1.25rem !important;
+    }
+
+    .profile-hero-identity {
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 1rem !important;
+    }
+
+    .profile-hero-avatar {
+        width: 68px !important;
+        height: 68px !important;
+        font-size: 1.6rem !important;
+        border-width: 3px !important;
+    }
+
+    .profile-hero-text h1 {
+        font-size: 1.25rem !important;
+        line-height: 1.3 !important;
+    }
+
+    .profile-hero-cta {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.6rem !important;
+    }
+
+    .profile-hero-cta .btn {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    .profile-main-content {
+        padding: 1.25rem 1rem !important;
+        border-radius: 16px !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .content-header-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.75rem !important;
+    }
+
+    .content-header-row > a,
+    .content-header-row > button,
+    .content-header-row > span {
+        width: 100% !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    .avatar-box-interactive {
+        flex-direction: column !important;
+        text-align: center !important;
+        padding: 1.25rem 1rem !important;
+        gap: 1.25rem !important;
+    }
+
+    .avatar-meta-info {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .avatar-btn-group {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.6rem !important;
+    }
+
+    .avatar-btn-group button,
+    .avatar-btn-group a {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    .form-grid-2col {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 0.85rem !important;
+        width: 100% !important;
+    }
+
+    .biodata-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 0.85rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .biodata-item {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        padding: 1rem 1.15rem !important;
+        grid-column: span 1 !important;
+    }
+
+    .biodata-value {
+        word-break: break-word !important;
+        overflow-wrap: anywhere !important;
+        white-space: normal !important;
+        line-height: 1.45 !important;
+        font-size: 0.95rem !important;
+    }
+
+    .biodata-label {
+        font-size: 0.75rem !important;
+        flex-wrap: wrap !important;
+        line-height: 1.3 !important;
+    }
+
+    .form-control-modern {
+        font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+        padding: 12px 14px 12px 38px !important;
+    }
+
+    .pwd-checklist {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    .bottom-form-actions {
+        flex-direction: column-reverse !important;
+        width: 100% !important;
+        gap: 0.6rem !important;
+    }
+
+    .bottom-form-actions button,
+    .bottom-form-actions a {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-hero-identity {
+        flex-direction: column !important;
+        text-align: center !important;
+        align-items: center !important;
+    }
+
+    .profile-hero-tags {
+        justify-content: center !important;
+    }
+
+    .profile-main-content {
+        padding: 1.15rem 0.85rem !important;
+    }
+
+    .sidebar-menu-nav {
+        padding: 0.4rem !important;
+    }
+
+    .sidebar-nav-link {
+        padding: 0.6rem 0.85rem !important;
+        font-size: 0.825rem !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+
+    <!-- 1. HERO BANNER -->
+    <header class="profile-hero-card">
+        <div class="container profile-hero-inner">
+            <div class="profile-hero-identity">
+                <div class="profile-hero-avatar" id="heroAvatarDisplay">
+                    {% if profile.avatar_url %}
+                        <img src="{{ profile.avatar_url }}" alt="Foto {{ student.username }}" id="heroAvatarImg">
+                    {% else %}
+                        <span>{{ student.first_name|first|default:student.username|first|upper }}</span>
+                    {% endif %}
+                </div>
+                <div class="profile-hero-text">
+                    <h1>{{ student.get_full_name|default:student.username }}</h1>
+                    <div class="profile-hero-tags">
+                        <span class="profile-tag-pill pill-nim">
+                            <i class="fas fa-id-card"></i> NIM: {{ profile.nim|default:student.username }}
+                        </span>
+                        <span class="profile-tag-pill pill-status">
+                            <i class="fas fa-check-circle"></i> Mahasiswa Aktif
+                        </span>
+                        {% if profile.university %}
+                        <span class="profile-tag-pill pill-campus">
+                            <i class="fas fa-university"></i> {{ profile.university.name }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-hero-cta">
+                <a href="{% url 'cari_kost' %}" class="btn btn-warning font-weight-bold shadow-sm" style="background: #f59e0b; color: #0f172a; border-radius: 12px; padding: 10px 20px; font-weight: 700; text-decoration: none;">
+                    <i class="fas fa-search-location mr-1"></i> Cari Kost Sekarang
+                </a>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 2. DASHBOARD 2-COLUMN GRID -->
+        <div class="profile-dashboard-layout">
+
+            <!-- SIDEBAR KIRI -->
+            <aside class="profile-sidebar-wrapper">
+                <!-- User Summary -->
+                <div class="profile-card-box">
+                    <div class="sidebar-user-card">
+                        <div class="sidebar-user-avatar">
+                            {% if profile.avatar_url %}
+                                <img src="{{ profile.avatar_url }}" alt="Avatar" id="sidebarAvatarImg">
+                            {% else %}
+                                <span>{{ student.first_name|first|default:student.username|first|upper }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="sidebar-name">{{ student.get_full_name|default:student.username }}</div>
+                        <div class="sidebar-meta">
+                            <i class="fas fa-at"></i>{{ student.username }} &bull; {{ profile.nim }}
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.775rem; padding: 4px 10px; border-radius: 9999px;">
+                                <i class="fas fa-graduation-cap mr-1"></i> {{ profile.study_program.name|default:profile.faculty.name|default:"Mahasiswa UKRIDA" }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Links -->
+                    <nav class="sidebar-menu-nav" aria-label="Menu Profil">
+
+
+                        <a href="?tab=edit" class="sidebar-nav-link {% if active_tab == 'edit' %}active{% endif %}">
+                            <span><i class="fas fa-user-edit"></i> Edit Profil & Foto</span>
+                            <span class="sidebar-badge"><i class="fas fa-camera"></i></span>
+                        </a>
+
+                        <a href="?tab=security" class="sidebar-nav-link {% if active_tab == 'security' %}active{% endif %}">
+                            <span><i class="fas fa-shield-alt"></i> Keamanan Akun</span>
+                            <span class="sidebar-badge"><i class="fas fa-lock"></i></span>
+                        </a>
+
+                        <a href="?tab=favorit" class="sidebar-nav-link {% if active_tab == 'favorit' %}active{% endif %}">
+                            <span><i class="fas fa-heart text-danger"></i> Kost Favorit Saya</span>
+                            <span class="sidebar-badge">{{ favorite_count }}</span>
+                        </a>
+
+                        <a href="?tab=riwayat" class="sidebar-nav-link {% if active_tab == 'riwayat' %}active{% endif %}">
+                            <span><i class="fas fa-history text-primary"></i> Riwayat SPK TOPSIS</span>
+                            <span class="sidebar-badge">{{ history_count }}</span>
+                        </a>
+
+                        <hr style="margin: 0.5rem 0.75rem; border-color: #e2e8f0;">
+
+                        <a href="{% url 'logout' %}" class="sidebar-nav-link sidebar-logout-link" onclick="return confirm('Apakah Anda yakin ingin keluar dari akun U Kost?');" style="color: #dc2626; background: #fef2f2; border: 1px solid #fecaca;">
+                            <span><i class="fas fa-sign-out-alt"></i> Keluar (Logout)</span>
+                            <span class="sidebar-badge" style="background: #dc2626; color: #fff;"><i class="fas fa-power-off"></i></span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Info Box -->
+                <div class="profile-card-box p-3" style="background: #ffffff;">
+                    <div class="d-flex gap-2">
+                        <i class="fas fa-shield-alt text-primary mt-1" style="font-size: 1.25rem;"></i>
+                        <div>
+                            <strong class="small text-dark">Keamanan Akun Kampus</strong>
+                            <p class="text-muted small mb-0 mt-1" style="line-height: 1.45;">
+                                Jaga kerahasiaan kata sandi Anda dan perbarui foto profil dengan foto terbaru untuk mempermudah identifikasi pemilik kost.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- KANVAS KONTEN KANAN -->
+            <main class="profile-main-content">
+
+                <!-- Alert Messages -->
+                {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} d-flex align-items-center gap-2 mb-2 p-3" style="border-radius: 12px; font-weight: 600;" role="alert">
+                        <i class="fas {% if 'error' in message.tags %}fa-exclamation-circle text-danger{% elif 'success' in message.tags %}fa-check-circle text-success{% else %}fa-info-circle text-primary{% endif %}"></i>
+                        <div>{{ message }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- ======================================================== -->
+                <!-- TAB 1: BIODATA AKADEMIK                                  -->
+                <!-- ======================================================== -->
+                {% if active_tab == 'biodata' %}
+                <div>
+                    <div class="content-header-row">
+                        <div>
+                            <h2><i class="fas fa-id-card text-primary"></i> Rincian Identitas Mahasiswa</h2>
+                            <p>Data profil resmi civitas akademika UKRIDA pada sistem U Kost</p>
+                        </div>
+                        <a href="?tab=edit" class="btn-secondary-modern">
+                            <i class="fas fa-user-edit mr-1"></i> Edit Data
+                        </a>
+                    </div>
+
+                    <div class="biodata-grid">
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fas fa-id-badge text-primary"></i> NIM Mahasiswa</span>
+                            <span class="biodata-value">{{ profile.nim|default:student.username }}</span>
+                        </div>
+
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fas fa-user text-primary"></i> Nama Lengkap</span>
+                            <span class="biodata-value">{{ student.get_full_name|default:student.username }}</span>
+                        </div>
+
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fas fa-at text-primary"></i> Username Akun</span>
+                            <span class="biodata-value">@{{ student.username }}</span>
+                        </div>
+
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fas fa-envelope text-primary"></i> Email Terdaftar</span>
+                            <span class="biodata-value">{{ student.email|default:"Belum disetel" }}</span>
+                        </div>
+
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fab fa-whatsapp text-success"></i> No. Handphone / WhatsApp</span>
+                            <span class="biodata-value">
+                                {% if profile.phone_number %}
+                                    <span class="text-success font-weight-bold">{{ profile.phone_number }}</span>
+                                {% else %}
+                                    <span class="text-muted font-italic font-weight-normal small">Belum diisi (Dapat ditambahkan pada tab Edit Profil)</span>
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fas fa-university text-primary"></i> Kampus Utama</span>
+                            <span class="biodata-value">{{ profile.university.name|default:"Universitas Kristen Krida Wacana" }}</span>
+                        </div>
+
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fas fa-layer-group text-primary"></i> Fakultas</span>
+                            <span class="biodata-value">{{ profile.faculty.name|default:"Fakultas Teknik & Ilmu Komputer" }}</span>
+                        </div>
+
+                        <div class="biodata-item">
+                            <span class="biodata-label"><i class="fas fa-book-reader text-primary"></i> Program Studi</span>
+                            <span class="biodata-value">{{ profile.study_program.name|default:"Informatika" }}</span>
+                        </div>
+
+                        <div class="biodata-item biodata-item-full">
+                            <span class="biodata-label"><i class="fas fa-comment-dots text-primary"></i> Bio Singkat</span>
+                            <span class="biodata-value font-weight-normal" style="font-size: 0.95rem; color: #475569;">
+                                {{ profile.bio|default:"Mahasiswa aktif yang sedang mencari hunian kost nyaman dan strategis dekat kampus UKRIDA." }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- CTA Box -->
+                    <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #bfdbfe; border-radius: 16px; padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+                        <div>
+                            <strong style="color: #1e3a8a; font-size: 1.1rem; display: block; margin-bottom: 4px;">Siap Menemukan Kost Impian Anda?</strong>
+                            <p style="color: #2563eb; margin: 0; font-size: 0.9rem;">Gunakan sistem rekomendasi TOPSIS kami untuk menghitung peringkat terbaik sesuai anggaran & jarak.</p>
+                        </div>
+                        <a href="{% url 'cari_kost' %}" class="btn-primary-modern">
+                            <i class="fas fa-sliders-h mr-1"></i> Buka Wizard Rekomendasi
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ======================================================== -->
+                <!-- TAB 2: EDIT PROFIL & FOTO AVATAR (UNIFIED MASTER FORM)   -->
+                <!-- ======================================================== -->
+                {% if active_tab == 'edit' %}
+                <div>
+                    <div class="content-header-row">
+                        <div>
+                            <h2><i class="fas fa-user-edit text-primary"></i> Perbarui Profil & Foto</h2>
+                            <p>Ubah foto profil, identitas akun, dan kontak komunikasi mahasiswa UKRIDA</p>
+                        </div>
+                        <a href="?tab=biodata" class="btn-secondary-modern">
+                            <i class="fas fa-eye mr-1"></i> Lihat Biodata
+                        </a>
+                    </div>
+
+                    <!-- UNIFIED FORM: Avatar and Profile Details inside ONE master form -->
+                    <form method="POST" action="{% url 'profil' %}?tab=edit" enctype="multipart/form-data" id="profileMasterForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_profile">
+
+                        <!-- AVATAR UPLOAD COMPONENT -->
+                        <div class="avatar-box-interactive">
+                            <div class="avatar-preview-holder">
+                                <div class="avatar-preview-display" id="avatarDisplayBox">
+                                    {% if profile.avatar_url %}
+                                        <img src="{{ profile.avatar_url }}" alt="Avatar" id="avatarImgPreview">
+                                    {% else %}
+                                        <span id="avatarInitialsText">{{ student.first_name|first|default:student.username|first|upper }}</span>
+                                    {% endif %}
+                                </div>
+                                <span class="avatar-status-pill" id="avatarStatusBadge">
+                                    {% if profile.avatar_url %}Foto Aktif{% else %}Avatar Inisial{% endif %}
+                                </span>
+                            </div>
+
+                            <div class="avatar-meta-info">
+                                <h4>Foto Profil Pengguna</h4>
+                                <p>Foto ini akan ditampilkan di navbar pojok kanan atas, profil publik, dan identitas mahasiswa Anda. Format JPG, PNG, atau WebP (Maksimal 2 MB).</p>
+
+                                <!-- Hidden Native File Input -->
+                                <input type="file" id="realAvatarInput" name="avatar" accept="image/png, image/jpeg, image/jpg, image/webp" style="display: none;">
+
+                                <div class="avatar-btn-group">
+                                    <button type="button" class="btn-secondary-modern" id="btnChoosePhoto">
+                                        <i class="fas fa-camera text-primary"></i> Pilih Foto Baru
+                                    </button>
+
+                                    <button type="button" class="btn-primary-modern" id="btnSaveAvatarNow" style="display: none; background: #059669; border-color: #059669; color: #fff;">
+                                        <i class="fas fa-check-circle mr-1"></i> Simpan Foto Sekarang
+                                    </button>
+
+                                    <button type="button" class="btn-secondary-modern text-danger" id="btnCancelPhoto" style="display: none;">
+                                        <i class="fas fa-times"></i> Urungkan
+                                    </button>
+
+                                    {% if profile.avatar_url %}
+                                    <button type="button" class="btn-danger-modern" id="btnDeleteAvatarModal">
+                                        <i class="fas fa-trash-alt"></i> Hapus / Reset ke Default
+                                    </button>
+                                    {% endif %}
+                                </div>
+
+                                <div id="avatarFileNameDisplay" class="small text-success font-weight-bold mt-2" style="display: none;">
+                                    <i class="fas fa-check-circle mr-1"></i> <span id="fileNameText"></span> (Siap disimpan)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ACCOUNT DETAILS FIELDS -->
+                        <!-- Row 1: NIM & Nama Lengkap -->
+                        <div class="form-grid-2col">
+                            <div class="form-group-modern">
+                                <label class="form-label-modern"><i class="fas fa-id-badge text-primary mr-1"></i> Nomor Induk Mahasiswa (NIM)</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-lock input-icon-left"></i>
+                                    <input type="text" class="form-control-modern" value="{{ profile.nim|default:student.username }}" disabled readonly>
+                                </div>
+                                <small class="text-muted" style="font-size: 0.775rem;"><i class="fas fa-info-circle mr-1"></i>NIM terdaftar resmi dan tidak dapat diubah.</small>
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="edit_full_name" class="form-label-modern"><i class="fas fa-user text-primary mr-1"></i> Nama Lengkap <span class="text-danger">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-user input-icon-left"></i>
+                                    <input type="text" id="edit_full_name" name="full_name" class="form-control-modern" value="{{ student.get_full_name|default:student.username }}" placeholder="Nama lengkap sesuai KTM" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Username & Email -->
+                        <div class="form-grid-2col">
+                            <div class="form-group-modern">
+                                <label for="edit_username" class="form-label-modern"><i class="fas fa-at text-primary mr-1"></i> Username Akun <span class="text-danger">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-at input-icon-left"></i>
+                                    <input type="text" id="edit_username" name="username" class="form-control-modern" value="{{ student.username }}" placeholder="username_anda" required pattern="^[a-zA-Z0-9_.]+$">
+                                </div>
+                                <small class="text-muted" style="font-size: 0.775rem;">Gunakan huruf, angka, garis bawah (_), atau titik.</small>
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="edit_email" class="form-label-modern"><i class="fas fa-envelope text-primary mr-1"></i> Email Mahasiswa / Civitas <span class="text-danger">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-envelope input-icon-left"></i>
+                                    <input type="email" id="edit_email" name="email" class="form-control-modern" value="{{ student.email }}" placeholder="nama@civitas.ukrida.ac.id" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Phone & Campus -->
+                        <div class="form-grid-2col">
+                            <div class="form-group-modern">
+                                <label for="edit_phone_number" class="form-label-modern"><i class="fab fa-whatsapp text-success mr-1"></i> Nomor HP / WhatsApp</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-phone input-icon-left"></i>
+                                    <input type="tel" id="edit_phone_number" name="phone_number" class="form-control-modern" value="{{ profile.phone_number|default:'' }}" placeholder="Contoh: 081234567890">
+                                </div>
+                                <small class="text-muted" style="font-size: 0.775rem;">Mempermudah koordinasi saat menghubungi pemilik kost.</small>
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="edit_university" class="form-label-modern"><i class="fas fa-university text-primary mr-1"></i> Kampus Utama UKRIDA <span class="text-danger">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-university input-icon-left"></i>
+                                    <select id="edit_university" name="university" class="form-control-modern" required>
+                                        {% for u in universities %}
+                                        <option value="{{ u.id }}" {% if profile.university.id == u.id %}selected{% endif %}>{{ u.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 4: Faculty & Study Program -->
+                        <div class="form-grid-2col">
+                            <div class="form-group-modern">
+                                <label for="edit_faculty" class="form-label-modern"><i class="fas fa-layer-group text-primary mr-1"></i> Fakultas <span class="text-danger">*</span></label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-layer-group input-icon-left"></i>
+                                    <select id="edit_faculty" name="faculty" class="form-control-modern" required>
+                                        {% for f in faculties %}
+                                        <option value="{{ f.id }}" {% if profile.faculty.id == f.id %}selected{% endif %}>{{ f.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group-modern">
+                                <label for="edit_study_program" class="form-label-modern"><i class="fas fa-book-reader text-primary mr-1"></i> Program Studi</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-book-reader input-icon-left"></i>
+                                    <select id="edit_study_program" name="study_program" class="form-control-modern">
+                                        <option value="">-- Pilih Program Studi --</option>
+                                        {% for sp in study_programs %}
+                                        <option value="{{ sp.id }}" data-faculty="{{ sp.faculty_id }}" {% if profile.study_program.id == sp.id %}selected{% endif %}>
+                                            {{ sp.name }} ({{ sp.faculty.name }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 5: Bio -->
+                        <div class="form-group-modern">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label for="edit_bio" class="form-label-modern mb-0"><i class="fas fa-comment-dots text-primary mr-1"></i> Bio Singkat</label>
+                                <span id="bioCharCounter" style="font-size: 0.775rem; color: #94a3b8; font-weight: 600;">0 / 500</span>
+                            </div>
+                            <textarea id="edit_bio" name="bio" class="form-control-modern" rows="3" maxlength="500" placeholder="Tuliskan catatan singkat tentang preferensi hunian atau hobi Anda...">{{ profile.bio|default:'' }}</textarea>
+                        </div>
+
+                        <!-- SUBMIT BUTTON -->
+                        <div class="pt-3 border-top d-flex justify-content-end gap-2 bottom-form-actions">
+                            <a href="?tab=biodata" class="btn-secondary-modern">Batal</a>
+                            <button type="submit" class="btn-primary-modern" id="btnSubmitAllProfile">
+                                <span class="btn-text-normal"><i class="fas fa-save mr-2"></i> Simpan Perubahan Profil</span>
+                                <span class="btn-text-saving"><i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan Data...</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Separate Hidden Form for Avatar Deletion -->
+                    {% if profile.avatar %}
+                    <form method="POST" action="{% url 'profil' %}?tab=edit" id="deleteAvatarHiddenForm" style="display: none;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_avatar">
+                    </form>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- ======================================================== -->
+                <!-- TAB 3: KEAMANAN & KATA SANDI                             -->
+                <!-- ======================================================== -->
+                {% if active_tab == 'security' %}
+                <div>
+                    <div class="content-header-row">
+                        <div>
+                            <h2><i class="fas fa-shield-alt text-warning"></i> Keamanan Akun</h2>
+                            <p>Perbarui kata sandi akun Anda secara berkala demi keamanan identitas kampus</p>
+                        </div>
+                        <span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; border-radius: 9999px; padding: 6px 14px; font-weight: 700;">
+                            <i class="fas fa-lock mr-1"></i> Akun Terproteksi
+                        </span>
+                    </div>
+
+                    <form method="POST" action="{% url 'profil' %}?tab=security" id="changePasswordForm" style="max-width: 580px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="change_password">
+
+                        <!-- Old Password -->
+                        <div class="form-group-modern">
+                            <label for="old_password" class="form-label-modern">Kata Sandi Saat Ini <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-key input-icon-left"></i>
+                                <input type="password" id="old_password" name="old_password" class="form-control-modern" placeholder="••••••••" required autocomplete="current-password">
+                                <button type="button" class="toggle-eye-btn" data-input="old_password" title="Lihat Kata Sandi"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="form-group-modern">
+                            <label for="new_password" class="form-label-modern">Kata Sandi Baru <span class="text-danger">*</span></label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock input-icon-left"></i>
+                                <input type="password" id="new_password" name="new_password" class="form-control-modern" placeholder="Minimal 8 karakter kombinasi" required autocomplete="new-password">
+                                <button type="button" class="toggle-eye-btn" data-input="new_password" title="Lihat Kata Sandi"><i class="fas fa-eye"></i></button>
+                            </div>
+
+                            <!-- Strength Meter -->
+                            <div class="pwd-meter-box">
+                                <div class="pwd-meter-header">
+                                    <span>Kekuatan Kata Sandi:</span>
+                                    <span id="pwdStrengthLabel" style="color: #94a3b8;">Belum Diisi</span>
+                                </div>
+                                <div class="pwd-meter-track">
+                                    <div class="pwd-meter-fill" id="pwdMeterFill"></div>
+                                </div>
+                                <ul class="pwd-checklist">
+                                    <li class="pwd-check-item" id="checkLen"><i class="far fa-circle"></i> Minimal 8 karakter</li>
+                                    <li class="pwd-check-item" id="checkCases"><i class="far fa-circle"></i> Huruf besar & kecil</li>
+                                    <li class="pwd-check-item" id="checkNum"><i class="far fa-circle"></i> Mengandung angka (0-9)</li>
+                                    <li class="pwd-check-item" id="checkSym"><i class="far fa-circle"></i> Karakter khusus/simbol</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="form-group-modern">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label for="confirm_password" class="form-label-modern mb-0">Konfirmasi Kata Sandi Baru <span class="text-danger">*</span></label>
+                                <span id="pwdMatchStatus" style="font-size: 0.775rem; font-weight: 700; display: none;"></span>
+                            </div>
+                            <div class="input-with-icon">
+                                <i class="fas fa-check-double input-icon-left"></i>
+                                <input type="password" id="confirm_password" name="confirm_password" class="form-control-modern" placeholder="••••••••" required autocomplete="new-password">
+                                <button type="button" class="toggle-eye-btn" data-input="confirm_password" title="Lihat Kata Sandi"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-top">
+                            <button type="submit" class="btn-primary-modern btn-block w-100" id="btnSubmitPassword">
+                                <span class="btn-text-normal"><i class="fas fa-key mr-2"></i> Perbarui Kata Sandi</span>
+                                <span class="btn-text-saving"><i class="fas fa-spinner fa-spin mr-2"></i> Memproses Sandi Baru...</span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Sesi Akun & Logout Box -->
+                    <div class="mt-5 pt-4 border-top">
+                        <div class="p-4 rounded-xl border d-flex justify-content-between align-items-center flex-wrap gap-3" style="background: #fff5f5; border-color: #fecaca !important; border-radius: 16px;">
+                            <div>
+                                <h3 class="h6 font-weight-bold text-danger mb-1" style="font-size: 1rem;">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Sesi Login & Keluar Akun
+                                </h3>
+                                <p class="text-muted small mb-0" style="line-height: 1.45;">
+                                    Keluar dari akun Anda untuk mengamankan data akademik, terutama bila menggunakan komputer bersama di perpustakaan atau lab kampus UKRIDA.
+                                </p>
+                            </div>
+                            <a href="{% url 'logout' %}" class="btn btn-danger font-weight-bold shadow-sm" style="border-radius: 10px; padding: 10px 22px; font-weight: 700; white-space: nowrap;" onclick="return confirm('Apakah Anda yakin ingin keluar dari akun U Kost?');">
+                                <i class="fas fa-power-off mr-2"></i> Keluar (Logout)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ======================================================== -->
+                <!-- TAB 4: KOST FAVORIT SAYA                                 -->
+                <!-- ======================================================== -->
+                {% if active_tab == 'favorit' %}
+                <div>
+                    <div class="content-header-row">
+                        <div>
+                            <h2><i class="fas fa-heart text-danger"></i> Kost Favorit Saya (<span id="favTitleCount">{{ favorite_count }}</span>)</h2>
+                            <p>Daftar hunian kost yang Anda simpan untuk perbandingan dan kontak lebih lanjut</p>
+                        </div>
+                        <a href="{% url 'cari_kost' %}" class="btn-primary-modern">
+                            <i class="fas fa-plus mr-1"></i> Tambah Kost Lainnya
+                        </a>
+                    </div>
+
+                    <div class="kost-grid" id="favoritesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                        {% if favorites %}
+                            {% for fav in favorites %}
+                            <div class="kost-card" id="fav-card-{{ fav.kost.id }}">
+                                <div class="kost-card-img-wrapper">
+                                    <div class="kost-card-img-placeholder">
+                                        <i class="fas fa-home fa-3x text-muted"></i>
+                                    </div>
+                                    <span class="badge-type">{{ fav.kost.gender_type }}</span>
+                                    <button class="btn-favorite active" data-action="toggle-favorite" data-id="{{ fav.kost.id }}" title="Hapus dari Favorit">
+                                        <i class="fas fa-heart text-danger"></i>
+                                    </button>
+                                </div>
+                                <div class="kost-card-body">
+                                    <div class="kost-card-score-row">
+                                        <span class="match-score"><span class="score-num">95%</span> Cocok</span>
+                                        <span class="kost-rating"><i class="fas fa-star text-accent"></i> 4.8</span>
+                                    </div>
+                                    <h3 class="kost-card-title"><a href="{% url 'detail_kost' fav.kost.id %}">{{ fav.kost.name }}</a></h3>
+                                    <p class="kost-card-location"><i class="fas fa-map-marker-alt text-primary"></i> {{ fav.kost.location }} &bull; {{ fav.kost.address_details }}</p>
+                                    
+                                    <div class="kost-card-footer flex-column align-items-stretch gap-2 mt-auto">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="kost-price">
+                                                <span class="price-amount">Rp{{ fav.kost.price|floatformat:"0" }}</span>
+                                                <span class="price-period">/ bulan</span>
+                                            </div>
+                                            <div class="kost-card-actions">
+                                                <a href="{% url 'detail_kost' fav.kost.id %}" class="btn btn-primary btn-sm">Lihat Detail</a>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2 pt-2 border-top">
+                                            <a href="https://wa.me/6281234567890?text=Halo%20saya%20tertarik%20dengan%20{{ fav.kost.name|urlencode }}" target="_blank" class="btn btn-sm btn-outline-success flex-grow-1 text-center">
+                                                <i class="fab fa-whatsapp mr-1"></i> Hubungi Pemilik
+                                            </a>
+                                            <form method="POST" action="{% url 'profil' %}?tab=favorit" style="margin: 0;">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="remove_favorite">
+                                                <input type="hidden" name="kost_id" value="{{ fav.kost.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus dari Favorit">
+                                                    <i class="fas fa-trash-alt"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="text-center p-5" id="emptyFavorites" style="{% if favorites %}display: none;{% endif %} background: #f8fafc; border-radius: 16px; border: 1.5px dashed #cbd5e1;">
+                        <i class="far fa-heart fa-3x text-muted mb-3" style="display: block;"></i>
+                        <h4 class="font-weight-bold">Belum Ada Kost Favorit</h4>
+                        <p class="text-muted" style="max-width: 400px; margin: 0 auto 1.5rem auto;">Tandai kost yang Anda sukai dengan mengklik tombol hati untuk memantaunya di sini.</p>
+                        <a href="{% url 'cari_kost' %}" class="btn-primary-modern">Cari Kost Sekarang</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- ======================================================== -->
+                <!-- TAB 5: RIWAYAT PENCARIAN SPK                             -->
+                <!-- ======================================================== -->
+                {% if active_tab == 'riwayat' %}
+                <div>
+                    <div class="content-header-row">
+                        <div>
+                            <h2><i class="fas fa-history text-primary"></i> Riwayat Pencarian SPK TOPSIS (<span id="histTitleCount">{{ history_count }}</span>)</h2>
+                            <p>Daftar riwayat preferensi kriteria pencarian kost Anda yang tersimpan</p>
+                        </div>
+                        {% if history_list %}
+                        <form method="POST" action="{% url 'profil' %}?tab=riwayat" id="clearHistoryForm" style="margin: 0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="clear_history">
+                            <button type="submit" class="btn-danger-modern" onclick="return confirm('Apakah Anda yakin ingin membersihkan riwayat pencarian SPK?');">
+                                <i class="fas fa-trash mr-1"></i> Bersihkan Riwayat
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <div class="table-responsive" id="historyTableWrapper" style="overflow-x: auto;">
+                        <table class="table table-hover align-middle mb-0" style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <tr>
+                                    <th style="padding: 12px 16px; font-size: 0.825rem; font-weight: 700; color: #475569;">WAKTU SESI</th>
+                                    <th style="padding: 12px 16px; font-size: 0.825rem; font-weight: 700; color: #475569;">KAMPUS</th>
+                                    <th style="padding: 12px 16px; font-size: 0.825rem; font-weight: 700; color: #475569;">BUDGET</th>
+                                    <th style="padding: 12px 16px; font-size: 0.825rem; font-weight: 700; color: #475569;">RADIUS</th>
+                                    <th style="padding: 12px 16px; font-size: 0.825rem; font-weight: 700; color: #475569;">PRIORITAS</th>
+                                    <th style="padding: 12px 16px; font-size: 0.825rem; font-weight: 700; color: #475569;">STATUS</th>
+                                    <th style="padding: 12px 16px; font-size: 0.825rem; font-weight: 700; color: #475569; text-align: right;">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTbody">
+                                {% for h in history_list %}
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 12px 16px;">
+                                        <strong>{{ h.date }}</strong>
+                                        <div class="text-muted small">{{ h.time }}</div>
+                                    </td>
+                                    <td style="padding: 12px 16px;"><span class="badge" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;">{{ h.campus }}</span></td>
+                                    <td style="padding: 12px 16px;"><strong>{{ h.budget }}</strong></td>
+                                    <td style="padding: 12px 16px;">{{ h.distance }}</td>
+                                    <td style="padding: 12px 16px;"><span class="small text-muted">{{ h.priority }}</span></td>
+                                    <td style="padding: 12px 16px;"><span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;"><i class="fas fa-check mr-1"></i> Siap</span></td>
+                                    <td style="padding: 12px 16px; text-align: right;">
+                                        <a href="{% url 'rekomendasi' %}" class="btn btn-sm btn-outline-primary" style="font-weight: 700; border-radius: 8px;">
+                                            <i class="fas fa-redo-alt mr-1"></i> Buka
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+            </main>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const ALL_KOST = {{ all_kost_json|safe }};
+    const SERVER_HISTORY = {{ history_json|safe }};
+
+    // -------------------------------------------------------------
+    // 1. AVATAR PICKER & INSTANT LIVE PREVIEW
+    // -------------------------------------------------------------
+    const realInput = document.getElementById('realAvatarInput');
+    const btnChoose = document.getElementById('btnChoosePhoto');
+    const btnCancel = document.getElementById('btnCancelPhoto');
+    const btnSaveAvatar = document.getElementById('btnSaveAvatarNow');
+    const displayBox = document.getElementById('avatarDisplayBox');
+    const statusBadge = document.getElementById('avatarStatusBadge');
+    const fileNameDiv = document.getElementById('avatarFileNameDisplay');
+    const fileNameText = document.getElementById('fileNameText');
+    const deleteAvatarBtn = document.getElementById('btnDeleteAvatarModal');
+    const masterForm = document.getElementById('profileMasterForm');
+    const originalDisplayHTML = displayBox ? displayBox.innerHTML : '';
+
+    if (btnChoose && realInput) {
+        btnChoose.addEventListener('click', () => {
+            realInput.click();
+        });
+    }
+
+    if (btnSaveAvatar && masterForm) {
+        btnSaveAvatar.addEventListener('click', (e) => {
+            e.preventDefault();
+            btnSaveAvatar.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan Foto...';
+            btnSaveAvatar.style.pointerEvents = 'none';
+            btnSaveAvatar.style.opacity = '0.8';
+            // Change action to update_avatar and submit form
+            const actionInput = masterForm.querySelector('input[name="action"]');
+            if (actionInput) actionInput.value = 'update_avatar';
+            masterForm.submit();
+        });
+    }
+
+    if (realInput) {
+        realInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Size check: 2MB
+            if (file.size > 2 * 1024 * 1024) {
+                alert('Ukuran foto terlalu besar! Maksimal 2 MB.');
+                realInput.value = '';
+                return;
+            }
+
+            // Live Preview in Circle
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                if (displayBox) {
+                    displayBox.innerHTML = `<img src="${event.target.result}" alt="Preview Foto" style="width:100%;height:100%;object-fit:cover;display:block;">`;
+                }
+                if (statusBadge) {
+                    statusBadge.textContent = 'Pratinjau Foto Baru';
+                    statusBadge.style.background = '#10b981';
+                }
+                if (fileNameDiv && fileNameText) {
+                    fileNameText.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+                    fileNameDiv.style.display = 'block';
+                }
+                if (btnSaveAvatar) btnSaveAvatar.style.display = 'inline-flex';
+                if (btnCancel) btnCancel.style.display = 'inline-flex';
+                if (btnChoose) btnChoose.innerHTML = '<i class="fas fa-sync-alt text-primary"></i> Ganti Pilihan';
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (btnCancel) {
+        btnCancel.addEventListener('click', () => {
+            if (realInput) realInput.value = '';
+            if (displayBox) displayBox.innerHTML = originalDisplayHTML;
+            if (statusBadge) {
+                statusBadge.textContent = '{% if profile.avatar_url %}Foto Aktif{% else %}Avatar Inisial{% endif %}';
+                statusBadge.style.background = '#1e3a8a';
+            }
+            if (fileNameDiv) fileNameDiv.style.display = 'none';
+            if (btnSaveAvatar) btnSaveAvatar.style.display = 'none';
+            if (btnCancel) btnCancel.style.display = 'none';
+            if (btnChoose) btnChoose.innerHTML = '<i class="fas fa-camera text-primary"></i> Pilih Foto Baru';
+        });
+    }
+
+    // Trigger Delete Avatar
+    if (deleteAvatarBtn) {
+        deleteAvatarBtn.addEventListener('click', () => {
+            if (confirm('Apakah Anda yakin ingin menghapus foto profil dan mengembalikan avatar ke default inisial?')) {
+                const hiddenForm = document.getElementById('deleteAvatarHiddenForm');
+                if (hiddenForm) hiddenForm.submit();
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    // 2. PASSWORD TOGGLES
+    // -------------------------------------------------------------
+    document.querySelectorAll('.toggle-eye-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const inputId = btn.getAttribute('data-input');
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input && icon) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.className = 'fas fa-eye-slash';
+                } else {
+                    input.type = 'password';
+                    icon.className = 'fas fa-eye';
+                }
+            }
+        });
+    });
+
+    // -------------------------------------------------------------
+    // 3. PASSWORD STRENGTH METER
+    // -------------------------------------------------------------
+    const newPwd = document.getElementById('new_password');
+    const confPwd = document.getElementById('confirm_password');
+    const meterFill = document.getElementById('pwdMeterFill');
+    const meterLabel = document.getElementById('pwdStrengthLabel');
+    const matchStatus = document.getElementById('pwdMatchStatus');
+
+    const checkLen = document.getElementById('checkLen');
+    const checkCases = document.getElementById('checkCases');
+    const checkNum = document.getElementById('checkNum');
+    const checkSym = document.getElementById('checkSym');
+
+    const calcStrength = () => {
+        if (!newPwd) return;
+        const val = newPwd.value;
+
+        if (!val) {
+            if (meterFill) meterFill.style.width = '0%';
+            if (meterLabel) {
+                meterLabel.textContent = 'Belum Diisi';
+                meterLabel.style.color = '#94a3b8';
+            }
+            [checkLen, checkCases, checkNum, checkSym].forEach(c => {
+                if (c) {
+                    c.classList.remove('valid');
+                    c.querySelector('i').className = 'far fa-circle';
+                }
+            });
+            checkMatch();
+            return;
+        }
+
+        const isLen = val.length >= 8;
+        const isCase = /[a-z]/.test(val) && /[A-Z]/.test(val);
+        const isNum = /[0-9]/.test(val);
+        const isSym = /[!@#$%^&*(),.?":{}|<>]/.test(val);
+
+        const updateItem = (item, valid) => {
+            if (!item) return;
+            const icon = item.querySelector('i');
+            if (valid) {
+                item.classList.add('valid');
+                if (icon) icon.className = 'fas fa-check-circle text-success';
+            } else {
+                item.classList.remove('valid');
+                if (icon) icon.className = 'far fa-circle';
+            }
+        };
+
+        updateItem(checkLen, isLen);
+        updateItem(checkCases, isCase);
+        updateItem(checkNum, isNum);
+        updateItem(checkSym, isSym);
+
+        let score = (isLen ? 25 : 0) + (isCase ? 25 : 0) + (isNum ? 25 : 0) + (isSym ? 25 : 0);
+        if (val.length < 6) score = Math.min(score, 20);
+
+        if (meterFill && meterLabel) {
+            meterFill.style.width = score + '%';
+            if (score <= 25) {
+                meterFill.style.backgroundColor = '#ef4444';
+                meterLabel.textContent = 'Sangat Lemah';
+                meterLabel.style.color = '#ef4444';
+            } else if (score <= 50) {
+                meterFill.style.backgroundColor = '#f59e0b';
+                meterLabel.textContent = 'Cukup';
+                meterLabel.style.color = '#f59e0b';
+            } else if (score <= 75) {
+                meterFill.style.backgroundColor = '#3b82f6';
+                meterLabel.textContent = 'Kuat';
+                meterLabel.style.color = '#3b82f6';
+            } else {
+                meterFill.style.backgroundColor = '#10b981';
+                meterLabel.textContent = 'Sangat Kuat';
+                meterLabel.style.color = '#10b981';
+            }
+        }
+
+        checkMatch();
+    };
+
+    const checkMatch = () => {
+        if (!confPwd || !newPwd || !matchStatus) return;
+        const v1 = newPwd.value;
+        const v2 = confPwd.value;
+
+        if (!v2) {
+            matchStatus.style.display = 'none';
+            return;
+        }
+
+        matchStatus.style.display = 'inline-block';
+        if (v1 === v2) {
+            matchStatus.innerHTML = '<span class="text-success"><i class="fas fa-check-circle mr-1"></i>Kata sandi cocok</span>';
+        } else {
+            matchStatus.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle mr-1"></i>Sandi belum cocok</span>';
+        }
+    };
+
+    if (newPwd) newPwd.addEventListener('input', calcStrength);
+    if (confPwd) confPwd.addEventListener('input', checkMatch);
+
+    // -------------------------------------------------------------
+    // 4. BIO COUNTER
+    // -------------------------------------------------------------
+    const bioText = document.getElementById('edit_bio');
+    const bioCounter = document.getElementById('bioCharCounter');
+    if (bioText && bioCounter) {
+        const updateBio = () => {
+            bioCounter.textContent = `${bioText.value.length} / 500`;
+        };
+        bioText.addEventListener('input', updateBio);
+        updateBio();
+    }
+
+    // -------------------------------------------------------------
+    // 5. PRODI FILTERING BY FACULTY
+    // -------------------------------------------------------------
+    const selFac = document.getElementById('edit_faculty');
+    const selProdi = document.getElementById('edit_study_program');
+    if (selFac && selProdi) {
+        const filterProdi = () => {
+            const facId = selFac.value;
+            selProdi.querySelectorAll('option').forEach(opt => {
+                const optFac = opt.getAttribute('data-faculty');
+                if (!optFac) return;
+                opt.style.display = (!facId || optFac === facId) ? '' : 'none';
+            });
+        };
+        selFac.addEventListener('change', filterProdi);
+        filterProdi();
+    }
+
+    // -------------------------------------------------------------
+    // 6. FORM LOADING SPINNERS
+    // -------------------------------------------------------------
+    const handleLoading = (formId, btnId) => {
+        const form = document.getElementById(formId);
+        const btn = document.getElementById(btnId);
+        if (form && btn) {
+            form.addEventListener('submit', () => {
+                btn.classList.add('btn-is-saving');
+            });
+        }
+    };
+
+    handleLoading('profileMasterForm', 'btnSubmitAllProfile');
+    handleLoading('changePasswordForm', 'btnSubmitPassword');
+
+    // -------------------------------------------------------------
+    // 7. FAVORITES VIEW & STORAGE
+    // -------------------------------------------------------------
+    const favGrid = document.getElementById('favoritesGrid');
+    const emptyFav = document.getElementById('emptyFavorites');
+    const favTitleCount = document.getElementById('favTitleCount');
+
+    const updateFavs = () => {
+        if (typeof Storage === 'undefined') return;
+        let favIds = Storage.getFavorites() || [];
+        favIds = favIds.map(id => parseInt(id)).filter(id => !isNaN(id));
+        const count = favIds.length;
+        if (favTitleCount) favTitleCount.textContent = count;
+        if (!favGrid) return;
+        if (count === 0) {
+            favGrid.innerHTML = '';
+            if (emptyFav) emptyFav.style.display = 'block';
+            return;
+        }
+        if (emptyFav) emptyFav.style.display = 'none';
+
+        const favKosts = favIds.map(id => ALL_KOST.find(k => k.id === id)).filter(Boolean);
+        favGrid.innerHTML = favKosts.map(k => `
+            <div class="kost-card" id="fav-card-${k.id}">
+                <div class="kost-card-img-wrapper">
+                    <div class="kost-card-img-placeholder">
+                        <i class="fas fa-home fa-3x text-muted"></i>
+                    </div>
+                    <span class="badge-type">${k.room_type || 'Campur'}</span>
+                    <button class="btn-favorite active" data-action="toggle-favorite" data-id="${k.id}" title="Hapus dari Favorit">
+                        <i class="fas fa-heart text-danger"></i>
+                    </button>
+                </div>
+                <div class="kost-card-body">
+                    <div class="kost-card-score-row">
+                        <span class="match-score"><span class="score-num">${k.score || 95}%</span> Cocok</span>
+                        <span class="kost-rating"><i class="fas fa-star text-accent"></i> ${k.rating || 4.8}</span>
+                    </div>
+                    <h3 class="kost-card-title"><a href="/kost/${k.id}/">${k.name}</a></h3>
+                    <p class="kost-card-location"><i class="fas fa-map-marker-alt text-primary"></i> ${k.distance} km dari UKRIDA &bull; ${k.address}</p>
+                    <div class="kost-card-footer flex-column align-items-stretch gap-2 mt-auto">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="kost-price">
+                                <span class="price-amount">${k.price_display}</span>
+                                <span class="price-period">/ bulan</span>
+                            </div>
+                            <div class="kost-card-actions">
+                                <a href="/kost/${k.id}/" class="btn btn-primary btn-sm">Lihat Detail</a>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 pt-2 border-top">
+                            <a href="https://wa.me/${k.owner_phone ? k.owner_phone.replace(/[^0-9]/g, '') : '6281234567890'}?text=${encodeURIComponent('Halo, saya tertarik dengan ' + k.name)}" target="_blank" class="btn btn-sm btn-outline-success flex-grow-1 text-center">
+                                <i class="fab fa-whatsapp mr-1"></i> Hubungi Pemilik
+                            </a>
+                            <button class="btn btn-sm btn-outline-danger" data-action="toggle-favorite" data-id="${k.id}" title="Hapus dari Favorit">
+                                <i class="fas fa-trash-alt"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    };
+
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-favorite, [data-action="toggle-favorite"]')) {
+            setTimeout(updateFavs, 80);
+        }
+    });
+
+    updateFavs();
+});
+</script>
+{% endblock %}

@@ -1,9 +1,10 @@
 from django import forms
 from django.db import transaction
 from django.contrib.auth import authenticate
-from django.contrib.auth.forms import User
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Faculty, University, UserDetail
+from .models import Faculty, University, UserDetail, StudyProgram
+from .constants import PRIORITY_CRITERIA
 
 class StudentRegisterForm(UserCreationForm):
     full_name = forms.CharField(
@@ -20,7 +21,7 @@ class StudentRegisterForm(UserCreationForm):
     )
 
     nim = forms.CharField(
-        label='Nim',
+        label='NIM',
         max_length=20,
         required=True,
         widget=forms.TextInput(
@@ -36,14 +37,21 @@ class StudentRegisterForm(UserCreationForm):
         queryset=University.objects.all(),
         required=True,
         empty_label='Pilih Kampus Utama Anda',
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'id': 'reg_campus', 'class': 'form-control'})
     )
 
     faculty = forms.ModelChoiceField(
         queryset=Faculty.objects.all(),
         required=True,
         empty_label='Pilih Fakultas Anda',
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'id': 'reg_fakultas', 'class': 'form-control'})
+    )
+
+    study_program = forms.ModelChoiceField(
+        queryset=StudyProgram.objects.all(),
+        required=False,
+        empty_label='Pilih Program Studi (Opsional)',
+        widget=forms.Select(attrs={'id': 'reg_prodi', 'class': 'form-control'})
     )
 
     email = forms.EmailField(
@@ -84,10 +92,20 @@ class StudentRegisterForm(UserCreationForm):
         fields = ['email']
 
     def clean_nim(self):
-        nim = self.cleaned_data['nim']
-        if User.objects.filter(username=nim).exists():
-            raise forms.ValidationError('Nim ini sudah terdaftar.')
+        nim = self.cleaned_data.get('nim', '').strip()
+        if not nim:
+            raise forms.ValidationError('NIM wajib diisi.')
+        if User.objects.filter(username=nim).exists() or UserDetail.objects.filter(nim=nim).exists():
+            raise forms.ValidationError('NIM ini sudah terdaftar. Silakan masuk menggunakan akun tersebut.')
         return nim
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip()
+        if not email:
+            raise forms.ValidationError('Alamat email wajib diisi.')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('Alamat email ini sudah terdaftar pada akun lain.')
+        return email
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -109,7 +127,8 @@ class StudentRegisterForm(UserCreationForm):
                     user=user,
                     nim=self.cleaned_data['nim'],
                     university=self.cleaned_data['university'],
-                    faculty=self.cleaned_data['faculty']
+                    faculty=self.cleaned_data['faculty'],
+                    study_program=self.cleaned_data.get('study_program')
                 )
 
         return user
@@ -121,7 +140,7 @@ class StudentLoginForm(forms.Form):
         required=True,
         widget=forms.TextInput(
             attrs={
-                'id': '',
+                'id': 'nim',
                 'placeholder': 'Masukkan NIM',
                 'class': 'form-control'
             }
@@ -132,7 +151,7 @@ class StudentLoginForm(forms.Form):
         queryset=University.objects.all(),
         required=True,
         empty_label='Pilih Kampus Utama Anda',
-        widget=forms.Select(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'id': 'campus_select', 'class': 'form-control'})
     )
 
     password = forms.CharField(
@@ -140,9 +159,9 @@ class StudentLoginForm(forms.Form):
         required=True,
         widget=forms.PasswordInput(
             attrs={
-                'id': '',
+                'id': 'password',
                 'placeholder': '••••••••',
-                'class': 'form_control'
+                'class': 'form-control'
             }
         )
     )
@@ -165,7 +184,7 @@ class StudentLoginForm(forms.Form):
                 user = authenticate(username=user_obj.username, password=password)
 
                 if user is None:
-                    raise forms.ValidationError('Nim/Universitas atau Password Anda Salah')
+                    raise forms.ValidationError('NIM/Universitas atau Password Anda Salah')
                 if not user.is_active:
                     raise forms.ValidationError('Akun Ini Sudah Tidak Aktif')
                 cleaned_data['user'] = user
@@ -173,3 +192,71 @@ class StudentLoginForm(forms.Form):
                 raise forms.ValidationError('NIM/Universitas atau Password Anda Salah')
 
         return cleaned_data
+
+class PreferenceForm(forms.Form):
+    ROOM_TYPE_CHOICES = [
+        ('Semua', 'Semua'),
+        ('Putra', 'Kost Putra'),
+        ('Putri', 'Kost Putri'),
+        ('Campur', 'Kost Campur'),
+    ]
+
+    # Step 1: Kebutuhan Dasar
+    university = forms.ModelChoiceField(
+            queryset=University.objects.all(),
+            required=True,
+            empty_label='Pilih Kampus Utama Anda',
+            widget=forms.Select(attrs={'class': 'form-control'})
+        )
+    room_type = forms.ChoiceField(
+        choices=ROOM_TYPE_CHOICES,
+        required=False,
+        initial='Semua',
+        widget=forms.RadioSelect
+    )
+    max_price = forms.IntegerField(
+        required=True,
+        initial=2000000,
+        min_value=800000,
+        max_value=3500000,
+        widget=forms.NumberInput(attrs={
+            'type': 'range',
+            'id': 'priceSlider',
+            'class': 'custom-range',
+            'min': '800000',
+            'max': '3500000',
+            'step': '100000',
+        })
+    )
+    max_distance = forms.FloatField(
+        required=True,
+        initial=3.0,
+        min_value=0.5,
+        max_value=8.0,
+        widget=forms.NumberInput(attrs={
+            'type': 'range',
+            'id': 'distanceSlider',
+            'class': 'custom-range',
+            'min': '500',
+            'max': '8000',
+            'step': '500',
+        })
+    )
+
+    # Step 2: Fasilitas
+    facilities = forms.MultipleChoiceField(
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    # Step 3: Pembobotan
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for criteria in PRIORITY_CRITERIA:
+            field_name = f"priority_{criteria['id']}"
+            self.fields[field_name] = forms.IntegerField(
+                min_value=1,
+                max_value=5,
+                initial=3,
+                required=False,
+            )
