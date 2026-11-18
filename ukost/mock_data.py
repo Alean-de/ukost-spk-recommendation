@@ -377,13 +377,13 @@ FACILITIES_LIST = [
 ]
 
 # Priority criteria
-PRIORITY_CRITERIA = [
-    {'id': 'harga', 'name': 'Harga Sewa', 'icon': 'fas fa-money-bill-wave', 'description': 'Kesesuaian harga dengan budget yang ditentukan'},
-    {'id': 'jarak', 'name': 'Jarak ke Kampus', 'icon': 'fas fa-route', 'description': 'Kedekatan lokasi kost dengan kampus'},
-    {'id': 'fasilitas', 'name': 'Kelengkapan Fasilitas', 'icon': 'fas fa-th-list', 'description': 'Ketersediaan fasilitas yang dibutuhkan'},
-    {'id': 'keamanan', 'name': 'Keamanan Lingkungan', 'icon': 'fas fa-shield-alt', 'description': 'Tingkat keamanan di sekitar kost'},
-    {'id': 'kenyamanan', 'name': 'Kebersihan & Kenyamanan', 'icon': 'fas fa-star', 'description': 'Kondisi kebersihan dan kenyamanan kost'},
-]
+# PRIORITY_CRITERIA = [
+#     {'id': 'harga', 'name': 'Harga Sewa', 'icon': 'fas fa-money-bill-wave', 'description': 'Kesesuaian harga dengan budget yang ditentukan'},
+#     {'id': 'jarak', 'name': 'Jarak ke Kampus', 'icon': 'fas fa-route', 'description': 'Kedekatan lokasi kost dengan kampus'},
+#     {'id': 'fasilitas', 'name': 'Kelengkapan Fasilitas', 'icon': 'fas fa-th-list', 'description': 'Ketersediaan fasilitas yang dibutuhkan'},
+#     {'id': 'keamanan', 'name': 'Keamanan Lingkungan', 'icon': 'fas fa-shield-alt', 'description': 'Tingkat keamanan di sekitar kost'},
+#     {'id': 'kenyamanan', 'name': 'Kebersihan & Kenyamanan', 'icon': 'fas fa-star', 'description': 'Kondisi kebersihan dan kenyamanan kost'},
+# ]
 
 # Mock search history
 MOCK_HISTORY = [

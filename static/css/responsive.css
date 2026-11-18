@@ -11,9 +11,12 @@
 }
 
 html,
-body {
+body,
+.main-content,
+.profile-wrapper {
     max-width: 100vw;
     overflow-x: hidden;
+    width: 100%;
 }
 
 img,
@@ -110,39 +113,81 @@ video {
     .container,
     .container-wide,
     .container-narrow {
-        padding-left: var(--space-md);
-        padding-right: var(--space-md);
-        width: 100%;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
-    /* Navigation */
+    /* Navigation & Dropbar */
+    .nav-container {
+        position: static !important;
+    }
+
     .nav-menu {
-        position: fixed;
-        top: var(--navbar-height);
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: white;
-        flex-direction: column;
-        padding: var(--space-lg);
-        gap: var(--space-xs);
-        transform: translateX(100%);
-        transition: transform var(--transition-normal);
-        z-index: 999;
-        overflow-y: auto;
-        box-shadow: var(--shadow-xl);
+        position: absolute !important;
+        top: 100% !important; /* Drops directly down from the bottom of navbar */
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        background: #ffffff !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 1rem 1.25rem 1.5rem !important;
+        gap: 0.5rem !important;
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.22) !important;
+        border-top: 1px solid var(--gray-200) !important;
+        border-bottom: 3px solid var(--primary-500) !important;
+        z-index: 99999 !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: translateY(-12px) !important;
+        transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s ease !important;
+        max-height: calc(85vh) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
     }
 
     .nav-menu.show,
     .nav-menu.active {
-        transform: translateX(0);
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        transform: translateY(0) !important;
     }
 
-    .nav-link {
-        padding: 14px 16px;
-        border-radius: var(--radius-md);
-        font-size: 1rem;
-        width: 100%;
+    .nav-menu li {
+        width: 100% !important;
+        list-style: none !important;
+    }
+
+    .nav-menu .nav-link {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 16px !important;
+        border-radius: var(--radius-md) !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
+        color: var(--gray-700) !important;
+        background: transparent;
+        width: 100% !important;
+        transition: background 0.2s ease, color 0.2s ease !important;
+    }
+
+    .nav-menu .nav-link:hover,
+    .nav-menu .nav-link.active {
+        background: var(--primary-50) !important;
+        color: var(--primary-600) !important;
+    }
+
+    .nav-menu .nav-link i {
+        width: 24px !important;
+        text-align: center !important;
+        font-size: 1.15rem !important;
+        color: var(--primary-500) !important;
     }
 
     .nav-toggle {
@@ -681,5 +726,282 @@ video {
     .modal-card {
         margin: 10px;
         width: calc(100% - 20px);
+    }
+}
+
+/* ================================================================
+   MOBILE & IPHONE UNIVERSAL POLISH & SAFE AREA SYSTEM
+   ================================================================ */
+
+/* 1. Prevent iOS Safari auto-zoom on inputs */
+@media (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="number"],
+    select,
+    textarea,
+    .form-control,
+    .form-control-modern {
+        font-size: 16px !important; /* Critical for iOS: prevents auto-zooming */
+    }
+
+    /* Navbar Dropdown mobile positioning */
+    .user-dropdown {
+        right: 0 !important;
+        left: auto !important;
+        min-width: 270px !important;
+        max-width: calc(100vw - 24px) !important;
+        transform-origin: top right !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25) !important;
+    }
+
+    /* Toast container mobile polish */
+    .toast-container {
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 16px !important;
+        max-width: none !important;
+        width: calc(100% - 24px) !important;
+        z-index: 99999 !important;
+    }
+
+    /* Base touch target minimum 44px */
+    .btn,
+    .nav-link,
+    .sidebar-nav-link,
+    .btn-filter,
+    .level-btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    /* iPhone notch & bottom bar safe areas */
+    .navbar {
+        padding-top: max(8px, env(safe-area-inset-top));
+    }
+
+    .site-footer {
+        padding-bottom: max(24px, env(safe-area-inset-bottom));
+    }
+
+    /* Horizontal scrollbar styling for mobile tabs & tables */
+    .table-responsive,
+    .sidebar-menu-nav {
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+}
+
+/* 2. Extra small screens (iPhone SE, 320px - 360px) */
+@media (max-width: 360px) {
+    .nav-logo .logo-text {
+        font-size: 1.1rem;
+    }
+
+    .user-avatar {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .nav-actions {
+        gap: 4px !important;
+    }
+
+    .hero-title {
+        font-size: 1.45rem !important;
+    }
+
+    .section-title {
+        font-size: 1.3rem !important;
+    }
+
+    .card {
+        padding: 12px !important;
+    }
+}
+
+/* ================================================================
+   UNIVERSAL MOBILE RESPONSIVENESS & CUTOFF PREVENTION
+   Guarantees zero cutoffs on phones, iPhones, tablets & desktop
+   ================================================================ */
+
+/* Anti-overflow containment */
+html, body {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    position: relative;
+    width: 100% !important;
+}
+
+.main-content,
+.container,
+.container-wide,
+.container-narrow,
+.card,
+.auth-wrapper,
+.auth-container,
+.auth-form-card,
+.wizard-card,
+.profile-card,
+.kost-card {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+}
+
+/* Grid & Layout Mobile Rules */
+@media (max-width: 991px) {
+    .hero-container {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+
+    .hero-visual {
+        width: 100% !important;
+        max-width: 440px !important;
+        margin: 0 auto !important;
+    }
+
+    .spk-benefit-grid {
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+
+    .kost-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 1.25rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Home page step cards: single clean stack on phone */
+    .steps-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
+
+    .steps-grid::before {
+        display: none !important;
+    }
+
+    .step-card {
+        padding: 1.25rem 1rem !important;
+        width: 100% !important;
+    }
+
+    /* Kost grid on mobile: single column */
+    .kost-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.25rem !important;
+    }
+
+    /* Auth pages (login & register) on phone */
+    .auth-wrapper {
+        padding: 16px 10px !important;
+        min-height: calc(100vh - var(--navbar-height, 64px)) !important;
+        display: flex !important;
+        align-items: flex-start !important;
+    }
+
+    .auth-container {
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: var(--radius-lg) !important;
+        box-shadow: var(--shadow-md) !important;
+        margin: 0 auto !important;
+    }
+
+    .auth-banner {
+        padding: 1.25rem 1rem !important;
+        width: 100% !important;
+        text-align: left !important;
+    }
+
+    .auth-banner h2 {
+        font-size: 1.35rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .auth-banner p {
+        font-size: 0.85rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .auth-banner .auth-features {
+        display: none !important; /* Hide 3 long bullet points on phone so user immediately reaches the form */
+    }
+
+    .auth-form-card {
+        padding: 1.5rem 1.15rem !important;
+        width: 100% !important;
+    }
+
+    .auth-title {
+        font-size: 1.4rem !important;
+    }
+
+    .auth-subtitle {
+        font-size: 0.85rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    /* Form Rows on phone: collapse columns cleanly to 100% */
+    .form-row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .form-row > [class*="col-"],
+    .form-row > .form-group {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    /* Hero stats on phone */
+    .hero-stats {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+        width: 100% !important;
+    }
+
+    .hero-stat-divider {
+        display: none !important;
+    }
+
+    /* Comparison Table Scroll Protection */
+    .table-responsive {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        display: block !important;
+    }
+
+    /* Proximity banner in detail page */
+    .proximity-banner {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        align-items: flex-start !important;
+    }
+
+    /* Modal dialogs */
+    .modal-card {
+        width: calc(100% - 20px) !important;
+        max-width: 500px !important;
+        margin: 10px auto !important;
+        max-height: 90vh !important;
     }
 }

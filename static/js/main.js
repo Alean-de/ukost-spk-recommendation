@@ -231,23 +231,31 @@ const App = {
     setupNavigation() {
         const navToggle = document.getElementById('navToggle');
         const navMenu = document.getElementById('navMenu');
+        const userDropdown = document.getElementById('userDropdown');
 
         if (navToggle && navMenu) {
-            navToggle.addEventListener('click', () => {
-                const expanded = navToggle.getAttribute('aria-expanded') === 'true';
-                navToggle.setAttribute('aria-expanded', !expanded);
-                navToggle.classList.toggle('active');
-                navMenu.classList.toggle('active');
+            navToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (userDropdown) {
+                    userDropdown.classList.remove('active', 'show');
+                }
+                const isActive = navMenu.classList.toggle('active');
+                navMenu.classList.toggle('show', isActive);
+                navToggle.classList.toggle('active', isActive);
+                navToggle.setAttribute('aria-expanded', isActive ? 'true' : 'false');
             });
         }
 
         // Close on clicking outside
         document.addEventListener('click', (e) => {
-            if (navMenu && navMenu.classList.contains('active')) {
+            if (navMenu && (navMenu.classList.contains('active') || navMenu.classList.contains('show'))) {
                 if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
-                    navMenu.classList.remove('active');
-                    navToggle.classList.remove('active');
-                    navToggle.setAttribute('aria-expanded', 'false');
+                    navMenu.classList.remove('active', 'show');
+                    if (navToggle) {
+                        navToggle.classList.remove('active');
+                        navToggle.setAttribute('aria-expanded', 'false');
+                    }
                 }
             }
         });
@@ -256,16 +264,27 @@ const App = {
     setupUserDropdown() {
         const trigger = document.getElementById('userMenuTrigger');
         const dropdown = document.getElementById('userDropdown');
+        const navMenu = document.getElementById('navMenu');
+        const navToggle = document.getElementById('navToggle');
 
         if (trigger && dropdown) {
             trigger.addEventListener('click', (e) => {
+                e.preventDefault();
                 e.stopPropagation();
-                dropdown.classList.toggle('active');
+                if (navMenu) {
+                    navMenu.classList.remove('active', 'show');
+                }
+                if (navToggle) {
+                    navToggle.classList.remove('active');
+                    navToggle.setAttribute('aria-expanded', 'false');
+                }
+                const isOpen = dropdown.classList.toggle('active');
+                dropdown.classList.toggle('show', isOpen);
             });
 
             document.addEventListener('click', (e) => {
                 if (!dropdown.contains(e.target) && !trigger.contains(e.target)) {
-                    dropdown.classList.remove('active');
+                    dropdown.classList.remove('active', 'show');
                 }
             });
         }

@@ -35,9 +35,24 @@ class UserDetail(models.Model):
     study_program = models.ForeignKey(StudyProgram, on_delete=models.CASCADE, related_name="from_the_study_program", blank=True, null=True)
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     nim = models.CharField(max_length=20, unique=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="Nomor WhatsApp/HP")
+    bio = models.TextField(max_length=500, blank=True, null=True, verbose_name="Bio / Deskripsi Singkat")
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True, verbose_name="Foto Profil")
 
     def __str__(self):
         return f"{self.user.username} ({self.nim})"
+
+    @property
+    def avatar_url(self):
+        if self.avatar and hasattr(self.avatar, 'url'):
+            try:
+                return self.avatar.url
+            except Exception:
+                return None
+        return None
+
+class Cluster(models.Model):
+    cluster = models.CharField(max_length=255)
 
 class Kost(models.Model):
     class GenderType(models.TextChoices):
@@ -46,6 +61,7 @@ class Kost(models.Model):
         PUTRI = 'Putri'
 
     id = models.CharField(max_length=20, primary_key=True)
+    cluster_id = models.ForeignKey(Cluster, on_delete=models.CASCADE, related_name='kost_list', null=True, blank=True)
     gender_type = models.CharField(
         max_length=10,
         choices=GenderType.choices,
@@ -61,16 +77,39 @@ class Kost(models.Model):
     no_deposit_required = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} - {self.cluster_id}"
 
 class Facility(models.Model):
     name = models.CharField(max_length=255)
 
     class Meta:
-            verbose_name_plural = 'Facilities'
+        verbose_name_plural = 'Facilities'
 
     def __str__(self):
         return self.name
+
+    @property
+    def icon(self):
+        icon_map = {
+            'wifi': 'fas fa-wifi',
+            'kamar mandi': 'fas fa-bath',
+            'ac': 'fas fa-snowflake',
+            'parkir': 'fas fa-car',
+            'security': 'fas fa-shield-alt',
+            'cctv': 'fas fa-video',
+            'dapur': 'fas fa-utensils',
+            'laundry': 'fas fa-tshirt',
+            'listrik': 'fas fa-bolt',
+            'akses 24': 'fas fa-clock',
+            'furnitur': 'fas fa-couch',
+            'kasur': 'fas fa-bed',
+            'jendela': 'fas fa-window-maximize',
+        }
+        name_lower = self.name.lower()
+        for key, val in icon_map.items():
+            if key in name_lower:
+                return val
+        return 'fas fa-check-circle'
 
 class KostPromotion(models.Model):
     kost = models.ForeignKey(Kost, on_delete=models.CASCADE, related_name="promotions")
@@ -111,6 +150,7 @@ class Favorite(models.Model):
 class History(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="search_histories")
     university = models.ForeignKey(University, on_delete=models.CASCADE, related_name="histories")
+    gender = models.CharField(max_length=10, choices=Kost.GenderType.choices, default=Kost.GenderType.CAMPUR)
     budget_limit = models.IntegerField()
     radius_limit = models.IntegerField()
     facility = models.JSONField()
